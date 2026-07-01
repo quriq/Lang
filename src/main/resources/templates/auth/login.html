@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="login-form">
-    <h2 th:text="#{label.sign_in}">Please sign in</h2>
+    <h2 th:text="#{label.sign_in}">Please sign in!</h2>
 
     <!-- Сообщение об ошибке входа -->
     <div th:if="${param.error}" class="error" th:text="#{label.invalid_credentials}">Invalid username or password</div>
