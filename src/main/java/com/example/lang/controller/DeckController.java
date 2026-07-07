@@ -1,6 +1,7 @@
 package com.example.lang.controller;
 
 import com.example.lang.dto.DashboardStatsDto;
+import com.example.lang.service.DashboardService;
 import com.example.lang.service.DeckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,8 +16,6 @@ import com.example.lang.entity.User;
 public class DeckController {
     @Autowired
     private DeckService deckService;
-    @Autowired
-    private DashboardService dashboardService;
     @GetMapping("/decks")
     public String showDecksForm(org.springframework.ui.Model model, @AuthenticationPrincipal User currentUser) {
         model.addAttribute("decks", deckService.getDecksByUser(currentUser));
@@ -43,14 +42,4 @@ public class DeckController {
             return "redirect:/decks/new";
         }
     }
-    @GetMapping("/")
-    public String showDashboard(org.springframework.ui.Model model, @AuthenticationPrincipal User currentUser) {
-        DashboardStatsDto stats = dashboardService.getStats(currentUser);
-        model.addAttribute("stats", stats);
-        model.addAttribute("decks", deckService.getDecksByUser(currentUser));
-        return "home";
-    }
-
-
-
 }

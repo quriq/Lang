@@ -6,6 +6,13 @@ public class DashboardStatsDto {
     private int dayStreak;
     private String userName;
 
+    public DashboardStatsDto(long totalCards, long learnedCards, int dayStreak, String userName) {
+        this.totalCards = totalCards;
+        this.learnedCards = learnedCards;
+        this.dayStreak = dayStreak;
+        this.userName = userName;
+    }
+
     public long getTotalCards() {
         return totalCards;
     }
