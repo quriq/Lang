@@ -11,12 +11,12 @@
     <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
     <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
 
-    <form th:action="@{/folders/{id}/edit(id=${folder.id})}" method="post">
+    <form th:action="@{/decks/{deckId}/cards/{cardId}/edit(deckId=${deck.id}, cardId=${card.id})}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-        <input type="text" name="newFrontText" th:value="${folder.frontText}" required />
-        <input type="text" name="newBackText" th:value="${folder.backText}" required />
-        <input type="text" name="newExampleSentence" th:value="${folder.exampleSentence}" required />
+        <input type="text" name="newFrontText" th:value="${card.frontText}" required />
+        <input type="text" name="newBackText" th:value="${card.backText}" required />
+        <input type="text" name="newExampleSentence" th:value="${card.exampleSentence}" required />
 
         <button type="submit">Сохранить изменения</button>
     </form>

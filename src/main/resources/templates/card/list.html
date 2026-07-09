@@ -41,6 +41,7 @@
                     <em>Пример: <span th:text="${card.exampleSentence}">Пример предложения</span></em>
                 </p>
             </div>
+            <a th:href="@{/decks/{deckId}/cards/{cardId}/edit(deckId=${deck.id}, cardId=${card.id})}">Редактировать</a>
 
             <form th:action="@{/cards/{id}/delete(id=${card.id})}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
