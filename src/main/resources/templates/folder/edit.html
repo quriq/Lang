@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактировать папку</title>
+</head>
+<body>
+<div class="container">
+    <h1>Редактировать папку</h1>
+
+    <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/folders/{id}/edit(id=${folder.id})}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <input type="text" name="newName" th:value="${folder.name}" required />
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+
+    <a th:href="@{/folders}">← Назад к списку папок</a>
+</div>
+</body>
+</html>

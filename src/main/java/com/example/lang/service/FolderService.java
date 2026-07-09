@@ -1,6 +1,5 @@
 package com.example.lang.service;
 
-import com.example.lang.entity.Deck;
 import com.example.lang.entity.Folder;
 import com.example.lang.repository.FolderRepository;
 import com.example.lang.entity.User;
@@ -38,6 +37,17 @@ public class FolderService {
         }
 
         folderRepository.delete(folder);
-
+    }
+    public Folder updateFolder(Long folderId, User currentUser, String newName)throws AccessDeniedException {
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new IllegalArgumentException("Папка не найдена"));
+        if (!folder.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Нельзя редактировать чужую папку");
+        }
+        if (newName == null || newName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Название папки не может быть пустым");
+        }
+        folder.setName(newName);
+        return folderRepository.save(folder);
     }
 }
