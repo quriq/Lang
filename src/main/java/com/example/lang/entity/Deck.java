@@ -3,6 +3,7 @@ package com.example.lang.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "decks")
@@ -19,6 +20,11 @@ public class Deck {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id")
+    private Folder folder;
+    @OneToMany(mappedBy = "deck", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Card> cards;
 
     public Deck() {}
 
@@ -36,5 +42,7 @@ public class Deck {
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+    public Folder getFolder(){return folder;}
+    public void setFolder(Folder folder){this.folder=folder;}
 
 }

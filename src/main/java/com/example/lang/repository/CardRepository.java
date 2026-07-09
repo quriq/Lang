@@ -11,4 +11,6 @@ import java.util.List;
 public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findByDeckId(Long deckId);
     List<Card> findByDeckIdAndDueDateBefore(Long deckId, LocalDateTime date);
+    long countByDeckUserId(Long userId);
+    long countByDeckUserIdAndStabilityGreaterThan(Long userId, double threshold);
 }

@@ -2,40 +2,45 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="#{label.decks}">My Decks</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .deck-card { background: white; padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .deck-card h3 { margin: 0 0 0.5rem 0; }
-        .btn { display: inline-block; padding: 0.5rem 1rem; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
-        .btn:hover { background: #0056b3; }
-        .success { color: green; padding: 1rem; background: #d4edda; border-radius: 4px; margin-bottom: 1rem; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1 th:text="#{label.decks}">My Decks</h1>
+        <title th:text="#{label.decks}">My Decks</title>
+        <style>
+            body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
+            .container { max-width: 800px; margin: 0 auto; }
+            .deck-card { background: white; padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            .deck-card h3 { margin: 0 0 0.5rem 0; }
+            .btn { display: inline-block; padding: 0.5rem 1rem; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+            .btn:hover { background: #0056b3; }
+            .success { color: green; padding: 1rem; background: #d4edda; border-radius: 4px; margin-bottom: 1rem; }
+        </style>
+    </head>
+    <body>
+    <div class="container">
+        <h1 th:text="#{label.decks}">My Decks</h1>
 
-    <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
+        <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
 
-    <a th:href="@{/decks/new}" class="btn">Create New Deck</a>
+        <a th:href="@{/decks/new}" class="btn">Create New Deck</a>
 
-    <div th:if="${#lists.isEmpty(decks)}" style="margin-top: 2rem;">
-        <p>No decks yet. Create your first deck!</p>
-    </div>
-
-    <div th:unless="${#lists.isEmpty(decks)}">
-        <div th:each="deck : ${decks}" class="deck-card">
-            <h3 th:text="${deck.name}">Deck Name</h3>
-            <p><strong>Language:</strong> <span th:text="${deck.targetLanguage}">Language</span></p>
-            <p><strong>Created:</strong> <span th:text="${deck.createdAt}">Date</span></p>
+        <div th:if="${#lists.isEmpty(decks)}" style="margin-top: 2rem;">
+            <p>No decks yet. Create your first deck!</p>
         </div>
-    </div>
 
-    <form th:action="@{/logout}" method="post" style="margin-top: 2rem;">
-        <button type="submit" class="btn" style="background: #dc3545;">Logout</button>
-    </form>
-</div>
+        <div th:unless="${#lists.isEmpty(decks)}">
+            <div th:each="deck : ${decks}" class="deck-card">
+                <h3 th:text="${deck.name}">Deck Name</h3>
+                <p><strong>Language:</strong> <span th:text="${deck.targetLanguage}">Language</span></p>
+                <p><strong>Created:</strong> <span th:text="${deck.createdAt}">Date</span></p>
+                <form th:action="@{/decks/{id}/delete(id=${deck.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" onclick="return confirm('Удалить колоду и все её карточки?')">Удалить</button>
+                </form>
+            </div>
+        </div>
+
+        <form th:action="@{/logout}" method="post" style="margin-top: 2rem;">
+            <button type="submit" class="btn" style="background: #dc3545;">Logout</button>
+        </form>
+
+    </div>
 </body>
 </html>

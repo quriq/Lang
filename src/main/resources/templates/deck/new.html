@@ -27,6 +27,14 @@
 
         <input type="text" name="name" th:placeholder="#{label.deckname}" required/>
         <input type="text" name="targetLanguage" th:placeholder="#{label.target_language}" required/>
+        <select name="folderId">
+        <option value="">-- Без папки --</option>
+        <option th:each="folder : ${folders}"
+                th:value="${folder.id}"
+                th:text="${folder.name}">
+        </option>
+        </select>
+
 
         <button type="submit" th:text="#{button.newdeck}">Create New Deck</button>
     </form>
