@@ -47,12 +47,12 @@ public class FolderController {
     }
     @GetMapping("/folders/{id}")
     public String showFolderDecks(@PathVariable Long id, org.springframework.ui.Model model) {
-        Folder folder = folderRepository.findById(id).orElseThrow();
+        Folder folders = folderRepository.findById(id).orElseThrow();
         List<Deck> decks = deckRepository.findByFolderId(id);
 
-        model.addAttribute("folder", folder);
+        model.addAttribute("folders", folders);
         model.addAttribute("decks", decks);
-        return "folder/decks";
+        return "deck/decks";
     }
     @PostMapping("/folders/new")
     public String processCreateFolder(
