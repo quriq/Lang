@@ -84,18 +84,6 @@ public class FolderController {
         }
         return "redirect:/folders";
     }
-//    GET /folders/{id}/edit — показать форму редактирования
-//    Найти папку, проверить владельца.
-//    Добавить папку в модель: model.addAttribute("folder", folder).
-//    Вернуть шаблон "folder/edit".
-
-//    POST /folders/{id}/edit — сохранить изменения
-//    Принять @PathVariable Long id и @RequestParam String name.
-//    Найти папку, проверить владельца.
-//    Вызвать folderService.updateFolder(...).
-//    Добавить flash-сообщение "Папка успешно обновлена!".
-//    Сделать редирект на /folders.
-//    В блоке catch — редирект обратно на /folders/{id}/edit.
     @GetMapping("/folders/{id}/edit")
     public String showEditFolder(@PathVariable Long id, org.springframework.ui.Model model) throws AccessDeniedException {
         User currentUser = getCurrentUser();
@@ -123,8 +111,6 @@ public class FolderController {
         } catch (AccessDeniedException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
 }

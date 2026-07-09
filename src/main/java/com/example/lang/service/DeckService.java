@@ -43,6 +43,18 @@ public class DeckService {
         }
 
         deckRepository.delete(deck);
-
+    }
+    public Deck updateDeck(Long folderId, User currentUser, String newName, String newTargetLanguage)throws AccessDeniedException {
+        Deck deck = deckRepository.findById(folderId)
+                .orElseThrow(() -> new IllegalArgumentException("Колода не найдена"));
+        if (!deck.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Нельзя редактировать чужую колоду");
+        }
+        if (newName == null || newName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Название колоды не может быть пустым");
+        }
+        deck.setName(newName);
+        deck.setTargetLanguage(newTargetLanguage);
+        return deckRepository.save(deck);
     }
 }
