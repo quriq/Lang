@@ -1,4 +1,5 @@
 package com.example.lang.config;
+import com.example.lang.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,16 +33,8 @@ public class SecurityConfig {
                 .logout((logout) -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
-                .permitAll())
-                .userDetailsService(users(dataSource));
+                .permitAll());
         return http.build();
-    }
-    @Bean
-    public UserDetailsService users(DataSource dataSource) {
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-        jdbcUserDetailsManager.setUsersByUsernameQuery("select login, psw, enabled from users where login=?");
-        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select login, 'USER' from users where login=?");
-        return jdbcUserDetailsManager;
     }
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -1,13 +1,22 @@
 package com.example.lang.controller;
 
 import com.example.lang.entity.Deck;
+
+
 import com.example.lang.entity.Folder;
 import com.example.lang.repository.DeckRepository;
 import com.example.lang.repository.FolderRepository;
 import com.example.lang.repository.UserRepository;
+
+
+import com.example.lang.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.ui.Model;
 import com.example.lang.service.DeckService;
 import com.example.lang.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +48,11 @@ public class DeckController {
     @GetMapping("/decks")
     public String showDecksForm(org.springframework.ui.Model model) {
         User currentUser = getCurrentUser();
+    @GetMapping("/decks")
+    public String showDecksForm(Model model) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByLogin(username).orElseThrow();
+
         model.addAttribute("decks", deckService.getDecksByUser(currentUser));
         model.addAttribute("folders", folderService.getFoldersByUser(currentUser));
         return "deck/decks";
@@ -50,6 +64,7 @@ public class DeckController {
         model.addAttribute("folders", folderService.getFoldersByUser(currentUser));
         return "deck/new";
     }
+ folder_deck
     @PostMapping("/decks/new")
     public String processCreateDeck(
             @RequestParam String name,
@@ -66,7 +81,40 @@ public class DeckController {
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/decks/new";
+
+@PostMapping("/decks/new")
+public String processCreateDeck(
+        @RequestParam String name,
+        @RequestParam String targetLanguage,
+        RedirectAttributes redirectAttributes) {
+
+    try {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null) {
+            throw new RuntimeException("Не удалось получить аутентификацию");
         }
+
+        String username = auth.getName();
+        System.out.println(">>> Текущий пользователь: " + username);
+
+        if (username == null || username.equals("anonymousUser")) {
+            throw new RuntimeException("Пользователь не авторизован");
+        }
+
+        User currentUser = userRepository.findByLogin(username)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + username));
+
+        System.out.println(">>> Пользователь найден в БД: " + currentUser.getLogin());
+
+        deckService.createDeck(name, targetLanguage, currentUser);
+        redirectAttributes.addFlashAttribute("successMessage", "Колода успешно создана!");
+        return "redirect:/decks";
+    } catch (RuntimeException e) {
+        System.err.println(">>> ОШИБКА: " + e.getMessage());
+        e.printStackTrace();
+        redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        return "redirect:/decks/new";
     }
     @GetMapping("/decks/{id}")
     public String redirectDeckToCards(@PathVariable Long id) {
@@ -75,6 +123,8 @@ public class DeckController {
     @PostMapping("/decks/{id}/delete")
     public String processDeleteDeck(@PathVariable Long id,
                                     RedirectAttributes redirectAttributes) {
+
+}
 
         try {
             User currentUser = getCurrentUser();
