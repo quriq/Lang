@@ -30,12 +30,17 @@
                 <h3 th:text="${deck.name}">Deck Name</h3>
                 <p><strong>Language:</strong> <span th:text="${deck.targetLanguage}">Language</span></p>
                 <p><strong>Created:</strong> <span th:text="${deck.createdAt}">Date</span></p>
+                <form th:action="@{/decks/{id}/delete(id=${deck.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" onclick="return confirm('Удалить колоду и все её карточки?')">Удалить</button>
+                </form>
             </div>
         </div>
 
         <form th:action="@{/logout}" method="post" style="margin-top: 2rem;">
             <button type="submit" class="btn" style="background: #dc3545;">Logout</button>
         </form>
+
     </div>
 </body>
 </html>

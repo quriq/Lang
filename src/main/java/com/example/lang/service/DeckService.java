@@ -8,6 +8,7 @@ import com.example.lang.repository.DeckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,5 +34,15 @@ public class DeckService {
     }
     public List<Deck> getDecksByUser(User user) {
         return deckRepository.findByUserId(user.getId());
+    }
+    public void deleteDeck(Long deckId, User currentUser) throws AccessDeniedException {
+        Deck deck = deckRepository.findById(deckId)
+                .orElseThrow(() -> new IllegalArgumentException("Колода не найдена"));
+        if (!deck.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Нельзя удалить чужую колоду");
+        }
+
+        deckRepository.delete(deck);
+
     }
 }

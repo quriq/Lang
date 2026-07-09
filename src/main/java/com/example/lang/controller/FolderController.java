@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Controller
@@ -67,6 +68,20 @@ public class FolderController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/folders/new";
         }
+    }
+    @PostMapping("/folders/{id}/delete")
+    public String processDeleteDeck(@PathVariable Long id,
+                                    RedirectAttributes redirectAttributes) {
 
+        try {
+            User currentUser = getCurrentUser();
+            folderService.deleteFolder(id, currentUser);
+            redirectAttributes.addFlashAttribute("successMessage", "Колода успешно удалена!");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+        return "redirect:/folders";
     }
 }
