@@ -2,6 +2,7 @@ package com.example.lang.service;
 
 
 import com.example.lang.entity.Deck;
+import com.example.lang.entity.Folder;
 import com.example.lang.entity.User;
 import com.example.lang.repository.DeckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class DeckService {
     @Autowired
     private DeckRepository deckRepository;
 
-    public Deck createDeck(String name, String targetLanguage, User owner) {
+    public Deck createDeck(String name, String targetLanguage, User owner, Folder folder) {
         if(name == null || name.trim().isEmpty()){
             throw new IllegalArgumentException("Название колоды не может быть пустым");
         }
@@ -24,6 +25,7 @@ public class DeckService {
         deck.setName(name);
         deck.setTargetLanguage(targetLanguage);
 
+        deck.setFolder(folder);
         deck.setUser(owner);
         deck.setCreatedAt(LocalDateTime.now());
 

@@ -1,10 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="#{label.folders}">My Folders</title>
 </head>
 <body>
+<div class="container">
+    <h1 th:text="#{label.folders}">My Folders</h1>
 
+    <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
+
+    <a th:href="@{/folders/new}" class="btn">Create New Folder</a>
+
+    <div th:if="${#lists.isEmpty(folders)}" style="margin-top: 2rem;">
+        <p>No decks yet. Create your first folder!</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(folders)}">
+        <div th:each="folder : ${folders}">
+            <a th:href="@{/folders/{id}(id=${folder.id})}">
+                <h3 th:text="${folder.name}">Folder Name</h3>
+            </a>
+            <p th:text="${folder.createdAt}">Date</p>
+        </div>
+    </div>
+
+    <form th:action="@{/logout}" method="post" style="margin-top: 2rem;">
+        <button type="submit" class="btn" style="background: #dc3545;">Logout</button>
+    </form>
+</div>
 </body>
 </html>
