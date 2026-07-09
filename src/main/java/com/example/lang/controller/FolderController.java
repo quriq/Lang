@@ -84,4 +84,47 @@ public class FolderController {
         }
         return "redirect:/folders";
     }
+//    GET /folders/{id}/edit — показать форму редактирования
+//    Найти папку, проверить владельца.
+//    Добавить папку в модель: model.addAttribute("folder", folder).
+//    Вернуть шаблон "folder/edit".
+
+//    POST /folders/{id}/edit — сохранить изменения
+//    Принять @PathVariable Long id и @RequestParam String name.
+//    Найти папку, проверить владельца.
+//    Вызвать folderService.updateFolder(...).
+//    Добавить flash-сообщение "Папка успешно обновлена!".
+//    Сделать редирект на /folders.
+//    В блоке catch — редирект обратно на /folders/{id}/edit.
+    @GetMapping("/folders/{id}/edit")
+    public String showEditFolder(@PathVariable Long id, org.springframework.ui.Model model) throws AccessDeniedException {
+        User currentUser = getCurrentUser();
+        Folder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Папка не найдена"));
+
+        if (!folder.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Нельзя редактировать чужую папку");
+        }
+        model.addAttribute("folder", folder);
+        return "folder/edit";
+    }
+    @PostMapping("/folders/{id}/edit")
+    public String processEditFolder(@PathVariable Long id,
+                                    @RequestParam String newName,
+                                    RedirectAttributes redirectAttributes){
+        try {
+            User currentUser = getCurrentUser();
+            folderService.updateFolder(id, currentUser, newName);
+            redirectAttributes.addFlashAttribute("successMessage", "Папка успешно обновлена!");
+            return "redirect:/folders";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/folders/{id}/edit";
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
 }
