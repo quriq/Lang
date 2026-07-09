@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактировать </title>
+</head>
+<body>
+<div class="container">
+    <h1>Редактировать </h1>
+
+    <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/decks/{id}/edit(id=${deck.id})}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <input type="text" name="newName" th:value="${deck.name}" required />
+        <input type="text" name="newTargetLanguage" th:value="${deck.targetLanguage}" required />
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+
+    <a th:href="@{/decks}">← Назад к списку </a>
+</div>
+</body>
+</html>

@@ -3,6 +3,7 @@ package com.example.lang.controller;
 import com.example.lang.entity.Card;
 import com.example.lang.entity.Deck;
 import com.example.lang.entity.User;
+import com.example.lang.repository.CardRepository;
 import com.example.lang.repository.DeckRepository;
 import com.example.lang.repository.UserRepository;
 import com.example.lang.service.CardService;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 
 
@@ -27,6 +28,8 @@ public class CardController {
     private CardService cardService;
     @Autowired
     private DeckRepository deckRepository;
+    @Autowired
+    private CardRepository cardRepository;
 
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -100,5 +103,45 @@ public class CardController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/decks";
+    }
+    @GetMapping("/decks/{deckId}/cards/{cardId}/edit")
+    public String showEditCard(@PathVariable Long deckId,
+                               @PathVariable Long cardId,
+                               org.springframework.ui.Model model) throws AccessDeniedException {
+        User currentUser = getCurrentUser();
+        Deck deck = deckRepository.findById(deckId)
+                .orElseThrow(() -> new IllegalArgumentException("Колода не найдена"));
+
+        if (!deck.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Нет доступа");
+        }
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new IllegalArgumentException("Карта не найдена"));
+
+        if (!card.getDeck().getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Нельзя редактировать чужую карту");
+        }
+        model.addAttribute("card", card);
+        model.addAttribute("deck", deck);
+        return "card/edit";
+    }
+    @PostMapping("/decks/{deckId}/cards/{cardId}/edit")
+    public String processEditCard(@PathVariable Long deckId,
+                                  @PathVariable Long cardId,
+                                  @RequestParam String newFrontText,
+                                  @RequestParam String newBackText,
+                                  @RequestParam(required = false) String newExampleSentence,
+                                  RedirectAttributes redirectAttributes){
+        try {
+            User currentUser = getCurrentUser();
+            cardService.updateCard(deckId, cardId, currentUser, newFrontText, newBackText, newExampleSentence);
+            redirectAttributes.addFlashAttribute("successMessage", "Карта успешно обновлена!");
+            return "redirect:/decks/" + deckId + "/cards";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/decks/" + deckId + "/cards/" + cardId + "/edit";
+        } catch (java.nio.file.AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

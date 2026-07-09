@@ -45,6 +45,25 @@ public class CardService {
         }
 
         cardRepository.delete(card);
-
+    }
+    public Card updateCard(Long deckId, Long cardId, User currentUser, String newFrontText, String newBackText, String newExampleSentence)throws java.nio.file.AccessDeniedException {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new IllegalArgumentException("Карта не найдена"));
+        if (!card.getDeck().getUser().getId().equals(currentUser.getId())) {
+            throw new java.nio.file.AccessDeniedException("Нельзя редактировать чужую карту");
+        }
+        if (!card.getDeck().getId().equals(deckId)) {
+            throw new IllegalArgumentException("Карточка не принадлежит этой колоде");
+        }
+        if (newFrontText == null || newFrontText.trim().isEmpty()) {
+            throw new IllegalArgumentException("Слово не может быть пустым");
+        }
+        if (newBackText == null || newBackText.trim().isEmpty()) {
+            throw new IllegalArgumentException("Перевод не может быть пустым");
+        }
+        card.setFrontText(newFrontText);
+        card.setBackText(newBackText);
+        card.setExampleSentence(newExampleSentence);
+        return cardRepository.save(card);
     }
 }

@@ -137,4 +137,33 @@ public String processCreateDeck(
         }
         return "redirect:/decks";
     }
+    @GetMapping("/decks/{id}/edit")
+    public String showEditDeck(@PathVariable Long id, org.springframework.ui.Model model) throws AccessDeniedException {
+        User currentUser = getCurrentUser();
+        Deck deck = deckRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Колода не найдена"));
+
+        if (!deck.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Нельзя редактировать чужую колоду");
+        }
+        model.addAttribute("deck", deck);
+        return "deck/edit";
+    }
+    @PostMapping("/decks/{id}/edit")
+    public String processEditDeck(@PathVariable Long id,
+                                    @RequestParam String newName,
+                                    @RequestParam String newTargetLanguage,
+                                    RedirectAttributes redirectAttributes){
+        try {
+            User currentUser = getCurrentUser();
+            deckService.updateDeck(id, currentUser, newName, newTargetLanguage);
+            redirectAttributes.addFlashAttribute("successMessage", "Колода успешно обновлена!");
+            return "redirect:/decks";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/decks/{id}/edit";
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
