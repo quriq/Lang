@@ -1,7 +1,5 @@
 package com.example.lang.controller;
 
-import com.example.lang.dto.DashboardStatsDto;
-import com.example.lang.service.DashboardService;
 import com.example.lang.service.DeckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,7 +33,7 @@ public class DeckController {
 
         try {
             deckService.createDeck(name, targetLanguage, currentUser);
-            redirectAttributes.addFlashAttribute("successMessage", true);
+            redirectAttributes.addFlashAttribute("successMessage", "Колода успешно создана!");
             return "redirect:/decks";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
