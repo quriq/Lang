@@ -1,6 +1,8 @@
 package com.example.lang.controller;
 
+import com.example.lang.entity.Deck;
 import com.example.lang.entity.Folder;
+import com.example.lang.repository.DeckRepository;
 import com.example.lang.repository.FolderRepository;
 import com.example.lang.repository.UserRepository;
 import com.example.lang.service.DeckService;
@@ -21,6 +23,8 @@ import java.nio.file.AccessDeniedException;
 public class DeckController {
     @Autowired
     private DeckService deckService;
+    @Autowired
+    private DeckRepository deckRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -63,6 +67,10 @@ public class DeckController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/decks/new";
         }
+    }
+    @GetMapping("/decks/{id}")
+    public String redirectDeckToCards(@PathVariable Long id) {
+        return "redirect:/decks/" + id + "/cards";
     }
     @PostMapping("/decks/{id}/delete")
     public String processDeleteDeck(@PathVariable Long id,

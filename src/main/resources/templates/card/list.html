@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Карточки: ' + ${deck.name}">Карточки колоды</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card-item { background: white; padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .card-content h3 { margin: 0 0 0.5rem 0; color: #333; }
+        .card-content p { margin: 0.25rem 0; color: #666; }
+        .btn { padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px; display: inline-block; cursor: pointer; border: none; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:hover { background: #0056b3; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .empty-state { text-align: center; padding: 3rem; color: #666; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 th:text="'Карточки: ' + ${deck.name}">Название колоды</h1>
+        <a th:href="@{/decks/{deckId}/cards/new(deckId=${deck.id})}" class="btn btn-primary">+ Добавить карточку</a>
+    </div>
+
+    <div th:if="${successMessage}" style="color: green; padding: 1rem; background: #d4edda; border-radius: 4px; margin-bottom: 1rem;" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" style="color: red; padding: 1rem; background: #f8d7da; border-radius: 4px; margin-bottom: 1rem;" th:text="${errorMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(cards)}" class="empty-state">
+        <p>В этой колоде пока нет карточек.</p>
+        <a th:href="@{/decks/{deckId}/cards/new(deckId=${deck.id})}" class="btn btn-primary">Создать первую карточку</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(cards)}">
+        <div th:each="card : ${cards}" class="card-item">
+            <div class="card-content">
+                <h3 th:text="${card.frontText}">Слово</h3>
+                <p><strong>Перевод:</strong> <span th:text="${card.backText}">Перевод</span></p>
+                <p th:if="${card.exampleSentence != null and !card.exampleSentence.isEmpty()}">
+                    <em>Пример: <span th:text="${card.exampleSentence}">Пример предложения</span></em>
+                </p>
+            </div>
+
+            <form th:action="@{/cards/{id}/delete(id=${card.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить эту карточку?')">Удалить</button>
+            </form>
+        </div>
+    </div>
+
+    <a th:href="@{/decks}" style="margin-top: 2rem; display: inline-block; color: #007bff;">← Назад к списку колод</a>
+</div>
+</body>
+</html>

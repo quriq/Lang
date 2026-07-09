@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить карточку</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input, textarea { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 100px; resize: vertical; }
+        .btn { padding: 0.75rem 1.5rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .error { color: red; padding: 1rem; background: #f8d7da; border-radius: 4px; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Добавить карточку в колоду "<span th:text="${deck.name}">Название колоды</span>"</h1>
+
+    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/decks/{deckId}/cards/new(deckId=${deck.id})}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div class="form-group">
+            <label for="frontText">Слово/фраза:</label>
+            <input type="text" id="frontText" name="frontText" required />
+        </div>
+
+        <div class="form-group">
+            <label for="backText">Перевод:</label>
+            <input type="text" id="backText" name="backText" required />
+        </div>
+
+        <div class="form-group">
+            <label for="exampleSentence">Пример использования (необязательно):</label>
+            <textarea id="exampleSentence" name="exampleSentence"></textarea>
+        </div>
+
+        <button type="submit" class="btn">Создать карточку</button>
+    </form>
+
+    <a th:href="@{/decks/{id}(id=${deck.id})}" style="margin-top: 1rem; display: inline-block;">← Назад к колоде</a>
+</div>
+</body>
+</html>
