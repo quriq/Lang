@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{label.newfolder}">New Folder</title>
+</head>
+<body>
+<div class="newdeck-form">
+    <h2 th:text="#{label.create_folder}">Create New Folder</h2>
+
+    <div th:if="${errorMessage}" class="error" th:text="${errorMessage}"></div>
+
+    <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
+
+    <form th:action="@{/folders/{id}/edit(id=${folder.id})}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <input type="text" name="name" th:value="${folder.name}" th:placeholder="#{label.foldername}" required/>
+
+        <button type="submit" th:text="#{button.newfolder}">Create New Folder</button>
+    </form>
+</div>
+</body>
+</html>

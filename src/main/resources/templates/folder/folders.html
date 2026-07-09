@@ -21,11 +21,13 @@
             <a th:href="@{/folders/{id}(id=${folder.id})}">
                 <h3 th:text="${folder.name}">Folder Name</h3>
             </a>
+            <a th:href="@{/folders/{id}/edit(id=${folder.id})}" class="btn">Редактировать</a>
             <p th:text="${folder.createdAt}">Date</p>
             <form th:action="@{/folders/{id}/delete(id=${folder.id})}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <button type="submit" onclick="return confirm('Удалить папку и все её колоды?')">Удалить</button>
             </form>
+
         </div>
     </div>
 
