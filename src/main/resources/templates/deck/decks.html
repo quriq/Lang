@@ -20,6 +20,7 @@
         <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
 
         <a th:href="@{/decks/new}" class="btn">Create New Deck</a>
+        <a th:href="@{/}" class="btn">back</a>
 
         <div th:if="${#lists.isEmpty(decks)}" style="margin-top: 2rem;">
             <p>No decks yet. Create your first deck!</p>
@@ -29,7 +30,7 @@
             <div th:each="deck : ${decks}" class="deck-card">
                 <h3 th:text="${deck.name}">Deck Name</h3>
                 <p><strong>Language:</strong> <span th:text="${deck.targetLanguage}">Language</span></p>
-                <p><strong>Created:</strong> <span th:text="${deck.createdAt}">Date</span></p>
+                <span th:text="${#temporals.format(deck.createdAt, 'dd.MM.yyyy')}">Date</span>
                 <p><strong>Folder:</strong> <span th:if="${deck.folder != null}" th:text="${deck.folder.name}">Folder Name</span>
                     <span th:if="${deck.folder == null}"></span></p>
                 <a th:href="@{/decks/{id}/cards(id=${deck.id})}" class="btn" style="background: #28a745;">Карточки</a>
