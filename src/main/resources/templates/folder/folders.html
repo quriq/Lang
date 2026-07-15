@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <title th:text="#{label.folders}">My Folders</title>
 </head>
 <body>
@@ -10,31 +11,27 @@
 
     <div th:if="${successMessage}" class="success" th:text="${successMessage}"></div>
 
-    <a th:href="@{/folders/new}" class="btn">Create New Folder</a>
-    <a th:href="@{/}" class="btn">back</a>
+    <a th:href="@{/folders/new}" class="btn btn-primary">Create New Folder</a>
+    <a th:href="@{/}" class="btn btn-primary">back</a>
 
     <div th:if="${#lists.isEmpty(folders)}" style="margin-top: 2rem;">
         <p>No decks yet. Create your first folder!</p>
     </div>
 
     <div th:unless="${#lists.isEmpty(folders)}">
-        <div th:each="folder : ${folders}">
+        <div th:each="folder : ${folders}" class="deck-card">
             <a th:href="@{/folders/{id}(id=${folder.id})}">
                 <h3 th:text="${folder.name}">Folder Name</h3>
             </a>
             <span th:text="${#temporals.format(folder.createdAt, 'dd.MM.yyyy')}">Date</span>
-            <a th:href="@{/folders/{id}/edit(id=${folder.id})}" class="btn">Редактировать</a>
+            <a th:href="@{/folders/{id}/edit(id=${folder.id})}" class="btn btn-primary">Редактировать</a>
             <form th:action="@{/folders/{id}/delete(id=${folder.id})}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <button type="submit" onclick="return confirm('Удалить папку и все её колоды?')">Удалить</button>
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Удалить папку и все её колоды?')">Удалить</button>
             </form>
 
         </div>
     </div>
-
-    <form th:action="@{/logout}" method="post" style="margin-top: 2rem;">
-        <button type="submit" class="btn" style="background: #dc3545;">Logout</button>
-    </form>
 </div>
 </body>
 </html>

@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <title>Редактировать </title>
 </head>
 <body>
@@ -20,7 +21,7 @@
         <button type="submit">Сохранить изменения</button>
     </form>
 
-    <a th:href="@{/decks}">← Назад к списку </a>
+    <a th:href="@{/decks}" class="btn">← Назад к списку </a>
 </div>
 </body>
 </html>

@@ -1,0 +1,247 @@
+:root {
+    /* Основные цвета */
+    --color-primary: #6f0000;
+    --color-primary-hover: #ff2a2a;
+    --color-primary-active: #cc0000;
+    --color-primary-glow: rgba(255, 42, 42, 0.4);
+
+    /* Статусные цвета */
+    --color-btn: #ffd4d4;
+    --color-btn-danger: #ff2a2a;
+
+    /* Фоновые цвета */
+    --color-bg: #080000;
+    --color-bg-secondary: #ff2a2a ;
+    /*--color-card-bg:;*/
+    /*--color-card-hover: ;*/
+
+    /* Текст */
+    --color-text: #ffd4d4;
+    --color-text-muted: #996666;
+    --color-text-disabled: #664444;
+
+    /* Границы */
+    --color-border: #330000;
+    --color-border-active: #ff2a2a;
+
+    /* Тени и свечение */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+    --glow-primary: 0 0 20px rgba(255, 42, 42, 0.3);
+
+    /* Скругления */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+
+    /* Отступы */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Шрифты */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 20px;
+    --font-size-xl: 24px;
+    --font-size-xxl: 32px;
+
+    /* Переходы */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* Светлая тема */
+[data-theme="light"] {
+    --color-bg: #ffffff;
+    --color-bg-secondary: #f5f5f5;
+    --color-card-bg: #ffffff;
+    --color-card-hover: #fafafa;
+    --color-text: #1a0000;
+    --color-text-muted: #664444;
+    --color-text-disabled: #996666;
+    --color-border: #e0cccc;
+    --color-border-active: #ff2a2a;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Базовые стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Кнопки */
+.btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+    font-size: var(--font-size-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    color: var(--color-btn);
+    background-color: var(--color-bg-secondary);
+    text-decoration: none;
+}
+.btn:hover{
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: var(--glow-primary);
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    box-shadow: var(--glow-primary);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    background-color: var(--color-primary-active);
+    transform: translateY(0);
+}
+
+
+
+
+
+
+/* Карточки */
+.deck-card {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-fast);
+}
+
+.deck-card:hover {
+    background-color: var(--color-card-hover);
+    border-color: var(--color-border-active);
+    box-shadow: var(--shadow-md);
+}
+
+.deck-card-glow {
+    box-shadow: var(--glow-primary);
+}
+
+/* Анимации */
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 42, 42, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 42, 42, 0.5);
+    }
+}
+
+.animate-glow {
+    animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Утилиты */
+.text-muted {
+    color: var(--color-text-muted);
+}
+
+.text-primary {
+    color: var(--color-primary-hover);
+}
+
+.text-success {
+    color: var(--color-success);
+}
+
+.text-danger {
+    color: var(--color-danger);
+}
+
+.text-warning {
+    color: var(--color-warning);
+}
+
+.bg-card {
+    background-color: var(--color-card-bg);
+}
+
+.border-primary {
+    border-color: var(--color-primary-hover);
+}
+
+.shadow-glow {
+    box-shadow: var(--glow-primary);
+}
+
+
+/* Затемнённый фон */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px); /* Эффект размытия фона */
+}
+
+/* Окно */
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Анимация появления (если её ещё нет в styles.css) */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,18 +1,31 @@
-<h1>Welcome back, <span th:text="${stats.userName}">User</span></h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <title>Main</title>
+</head>
+<body>
+<div class="card">
+    <h1>Welcome back, <span th:text="${stats.userName}">User</span></h1>
 
-<div class="stats-card">
-    <h3>Cards Learned</h3>
-    <p th:text="${stats.learnedCards}">0</p>
+    <div class="stats-card">
+        <h3>Cards Learned</h3>
+        <p th:text="${stats.learnedCards}">0</p>
+    </div>
+
+    <div class="stats-card">
+        <h3>Total Cards</h3>
+        <p th:text="${stats.totalCards}">0</p>
+    </div>
+
+    <div class="stats-card">
+        <h3>Day Streak</h3>
+        <p th:text="${stats.dayStreak}">0</p>
+    </div>
+    <a th:href="@{/decks}" class="btn btn-primary"> Колоды </a>
+    <a th:href="@{/folders}" class="btn btn-primary"> Папки </a>
 </div>
 
-<div class="stats-card">
-    <h3>Total Cards</h3>
-    <p th:text="${stats.totalCards}">0</p>
-</div>
-
-<div class="stats-card">
-    <h3>Day Streak</h3>
-    <p th:text="${stats.dayStreak}">0</p>
-</div>
-<a th:href="@{/decks}"> Колоды  </a>
-<a th:href="@{/folders}"> Папки  </a>
+</body>
+</html>
