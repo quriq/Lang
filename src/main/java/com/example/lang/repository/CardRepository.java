@@ -1,6 +1,7 @@
 package com.example.lang.repository;
 
 import com.example.lang.entity.Card;
+import com.example.lang.entity.Deck;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,5 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findByDeckIdAndDueDateBefore(Long deckId, LocalDateTime date);
     long countByDeckUserId(Long userId);
     long countByDeckUserIdAndStabilityGreaterThan(Long userId, double threshold);
+    List<Card> findByDeckIdOrderByCreatedAtDesc(Long deckId);
 }

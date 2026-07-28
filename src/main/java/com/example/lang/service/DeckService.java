@@ -33,7 +33,7 @@ public class DeckService {
         return deckRepository.save(deck);
     }
     public List<Deck> getDecksByUser(User user) {
-        return deckRepository.findByUserId(user.getId());
+        return deckRepository.findByUserIdOrderByNameAsc(user.getId());
     }
     public void deleteDeck(Long deckId, User currentUser) throws AccessDeniedException {
         Deck deck = deckRepository.findById(deckId)

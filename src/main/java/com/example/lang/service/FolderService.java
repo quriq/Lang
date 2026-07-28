@@ -4,6 +4,7 @@ import com.example.lang.entity.Folder;
 import com.example.lang.repository.FolderRepository;
 import com.example.lang.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -28,7 +29,9 @@ public class FolderService {
         return folderRepository.save(folder);
 
     }
-    public List<Folder> getFoldersByUser(User user){return folderRepository.findByUserId(user.getId());}
+    public List<Folder> getFoldersByUser(User user){
+        return folderRepository.findByUserIdOrderByNameAsc(user.getId());}
+    
     public void deleteFolder(Long folderId, User currentUser) throws AccessDeniedException {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new IllegalArgumentException("Папка не найдена"));
@@ -50,4 +53,5 @@ public class FolderService {
         folder.setName(newName);
         return folderRepository.save(folder);
     }
+
 }

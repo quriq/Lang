@@ -35,7 +35,7 @@ public class CardService {
     }
 
     public List<Card> getCardsByDeck(Long deckId) {
-        return cardRepository.findByDeckId(deckId);
+        return cardRepository.findByDeckIdOrderByCreatedAtDesc(deckId);
     }
     public void deleteCard(Long cardId, User currentUser) throws AccessDeniedException {
         Card card = cardRepository.findById(cardId)
