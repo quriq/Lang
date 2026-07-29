@@ -9,14 +9,11 @@
 <div class="login-form">
     <h2 th:text="#{label.sign_in}">Please sign in!</h2>
 
-    <!-- Сообщение об ошибке входа -->
     <div th:if="${param.error}" class="error" th:text="#{label.invalid_credentials}">Invalid username or password</div>
 
-    <!-- Сообщение после выхода -->
     <div th:if="${param.logout}" class="error" style="color: green;" th:text="#{label.logged_out}">You have been logged out</div>
 
     <form th:action="@{/login}" method="post">
-        <!-- CSRF токен (обязательно!) -->
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
         <input type="text" name="username" th:placeholder="#{label.username}" required autofocus />

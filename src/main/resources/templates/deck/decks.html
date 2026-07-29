@@ -20,13 +20,21 @@
 
         <div th:unless="${#lists.isEmpty(decks)}">
             <div th:each="deck : ${decks}" class="deck-card">
+
                 <h3 th:text="${deck.name}">Deck Name</h3>
                 <p><strong>Language:</strong> <span th:text="${deck.targetLanguage}">Language</span></p>
+
                 <span th:text="${#temporals.format(deck.createdAt, 'dd.MM.yyyy')}">Date</span>
                 <p><strong>Folder:</strong> <span th:if="${deck.folder != null}" th:text="${deck.folder.name}">Folder Name</span>
                     <span th:if="${deck.folder == null}"></span></p>
                 <a th:href="@{/decks/{id}/cards(id=${deck.id})}" class="btn btn-primary">Карточки</a>
-                <a th:href="@{/decks/{id}/edit(id=${deck.id})}" class="btn btn-primary">Редактировать</a>
+                <button class="btn btn-outline openEditDeckModalBtn"
+                        th:data-deck-id="${deck.id}"
+                        th:data-name="${deck.name}"
+                        th:data-target-language="${deck.targetLanguage}"
+                        th:data-folder-id="${deck.folder != null ? deck.folder.id : ''}">
+                    Редактировать
+                </button>
                 <form th:action="@{/decks/{id}/delete(id=${deck.id})}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <button type="submit" class="btn btn-primary" onclick="return confirm('Удалить колоду и все её карточки?')" >Удалить</button>
@@ -35,11 +43,12 @@
         </div>
     </div>
 
+
     <div id="createDeckModal" class="modal-overlay" style="display: none;">
         <div class="modal-content card">
-            <h2>Новая колода</h2>
+            <h2 style="margin-bottom: 1rem;">Новая колода</h2>
 
-            <form th:action="@{/decks/new}" method="post">
+            <form th:action="@{/decks/new}" method="post" id="createForm">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                 <div class="form-group">
@@ -63,8 +72,44 @@
                 </div>
 
                 <div style="display: flex; gap: var(--spacing-sm); justify-content: flex-end; margin-top: var(--spacing-lg);">
-                    <button type="submit" class="btn btn-primary">Создать</button>
                     <button type="button" class="btn btn-outline modal-close-btn">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editDeckModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content card">
+            <h2 style="margin-bottom: 1rem;">Редактирование колоды</h2>
+            <form id="editForm" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <div class="form-group">
+                    <label class="form-label">Название</label>
+                    <input type="text" id="editName" name="newName" class="form-control" required/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Язык</label>
+                    <input type="text" id="editTargetLanguage" name="newTargetLanguage" class="form-control" required/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Папка (необязательно)</label>
+                    <select id="editFolderSelect" name="folderId" class="form-control">
+                        <option value="">Без папки</option>
+                        <option th:each="folder : ${folders}"
+                                th:value="${folder.id}"
+                                th:text="${folder.name}"
+                                th:selected="${deck != null and deck.folder != null and deck.folder.id == folder.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: var(--spacing-sm); justify-content: flex-end; margin-top: var(--spacing-lg);">
+                    <button type="button" class="btn btn-outline modal-close-btn">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
                 </div>
             </form>
         </div>
@@ -72,36 +117,57 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('createDeckModal');
-            const openBtn = document.getElementById('openCreateDeckModal');
-            const closeBtn = modal.querySelector('.modal-close-btn');
+            const openBtnCreate = document.getElementById('openCreateDeckModal');
+            const closeBtnCreate = modal.querySelector('.modal-close-btn');
+            const createForm = document.getElementById('createForm');
 
-            // Открыть окно
-            openBtn.addEventListener('click', function() {
+            openBtnCreate.addEventListener('click', () => {
                 modal.style.display = 'flex';
             });
 
-            // Закрыть по кнопке "Отмена"
-            closeBtn.addEventListener('click', function() {
+            const closeCreateModal = () => {
                 modal.style.display = 'none';
-                modal.querySelector('form').reset();
-            });
+                createForm.reset();
+            };
+            closeBtnCreate.addEventListener('click', closeCreateModal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeCreateModal(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.style.display === 'flex') closeCreateModal(); });
 
-            // Закрыть при клике на затемнённый фон
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    modal.querySelector('form').reset();
-                }
-            });
+            const modalEdit = document.getElementById('editDeckModal');
+            const openBtnsEdit = document.querySelectorAll('.openEditDeckModalBtn');
+            const closeBtnEdit = modalEdit.querySelector('.modal-close-btn');
+            const editForm = document.getElementById('editForm');
 
-            // Закрыть по клавише Escape
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && modal.style.display === 'flex') {
-                    modal.style.display = 'none';
-                    modal.querySelector('form').reset();
-                }
+            const editFolderSelect = document.getElementById('editFolderSelect');
+
+            openBtnsEdit.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const deckId = this.getAttribute('data-deck-id');
+                    const name = this.getAttribute('data-name');
+                    const targetLanguage = this.getAttribute('data-target-language');
+                    const folderId = this.getAttribute('data-folder-id') || '';
+
+                    editForm.action = `/decks/${deckId}/edit`;
+
+                    document.getElementById('editName').value = name;
+                    document.getElementById('editTargetLanguage').value = targetLanguage;
+
+                    editFolderSelect.value = folderId;
+
+                    modalEdit.style.display = 'flex';
+                });
+            });
+            const closeEditModal = () => {
+                modalEdit.style.display = 'none';
+                editForm.reset();
+            };
+            closeBtnEdit.addEventListener('click', closeEditModal);
+            modalEdit.addEventListener('click', (e) => { if (e.target === modalEdit) closeEditModal(); });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modalEdit.style.display === 'flex') closeEditModal();
             });
         });
+
     </script>
 </body>
 </html>

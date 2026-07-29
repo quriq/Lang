@@ -9,14 +9,11 @@
 <div class="form-container">
     <h2 th:text="#{label.registration}">Sign Up</h2>
 
-    <!-- Сообщение об ошибке валидации -->
     <div th:if="${param.error}" class="error" th:text="#{label.reg_error}">Registration failed</div>
 
-    <!-- Сообщение об успехе -->
     <div th:if="${param.success}" class="success" th:text="#{label.reg_success}">Registration successful!</div>
 
     <form th:action="@{/reg}" th:object="${user}" method="post">
-        <!-- CSRF токен (ОБЯЗАТЕЛЬНО!) -->
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
         <label th:text="#{label.username}">Username:</label>

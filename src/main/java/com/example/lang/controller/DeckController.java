@@ -103,15 +103,16 @@ public class DeckController {
     public String processEditDeck(@PathVariable Long id,
                                   @RequestParam String newName,
                                   @RequestParam String newTargetLanguage,
+                                  @RequestParam(required = false) Long folderId,
                                   RedirectAttributes redirectAttributes){
         try {
             User currentUser = getCurrentUser();
-            deckService.updateDeck(id, currentUser, newName, newTargetLanguage);
+            deckService.updateDeck(id, currentUser, newName, newTargetLanguage, folderId);
             redirectAttributes.addFlashAttribute("successMessage", "Колода успешно обновлена!");
             return "redirect:/decks";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/decks/{id}/edit";
+            return "redirect:/decks/" + id + "/edit";
         } catch (AccessDeniedException e) {
             throw new RuntimeException(e);
         }

@@ -5,6 +5,7 @@ import com.example.lang.entity.Deck;
 import com.example.lang.entity.Folder;
 import com.example.lang.entity.User;
 import com.example.lang.repository.DeckRepository;
+import com.example.lang.repository.FolderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,8 @@ import java.util.List;
 public class DeckService {
     @Autowired
     private DeckRepository deckRepository;
+    @Autowired
+    private FolderRepository folderRepository;
 
     public Deck createDeck(String name, String targetLanguage, User owner, Folder folder) {
         if(name == null || name.trim().isEmpty()){
@@ -44,17 +47,31 @@ public class DeckService {
 
         deckRepository.delete(deck);
     }
-    public Deck updateDeck(Long folderId, User currentUser, String newName, String newTargetLanguage)throws AccessDeniedException {
-        Deck deck = deckRepository.findById(folderId)
-                .orElseThrow(() -> new IllegalArgumentException("Колода не найдена"));
-        if (!deck.getUser().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException("Нельзя редактировать чужую колоду");
-        }
-        if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Название колоды не может быть пустым");
-        }
-        deck.setName(newName);
-        deck.setTargetLanguage(newTargetLanguage);
-        return deckRepository.save(deck);
+public Deck updateDeck(Long deckId, User currentUser, String newName,
+                       String newTargetLanguage, Long folderId) throws AccessDeniedException {
+
+    Deck deck = deckRepository.findById(deckId)
+            .orElseThrow(() -> new IllegalArgumentException("Колода не найдена"));
+
+    if (!deck.getUser().getId().equals(currentUser.getId())) {
+        throw new AccessDeniedException("Нельзя редактировать чужую колоду");
     }
+
+    if (newName == null || newName.trim().isEmpty()) {
+        throw new IllegalArgumentException("Название колоды не может быть пустым");
+    }
+
+    deck.setName(newName);
+    deck.setTargetLanguage(newTargetLanguage);
+
+    if (folderId != null && folderId > 0) {
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new IllegalArgumentException("Выбранная папка не найдена"));
+        deck.setFolder(folder);
+    } else {
+        deck.setFolder(null);
+    }
+
+    return deckRepository.save(deck);
+}
 }
