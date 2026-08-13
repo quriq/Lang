@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <title>Тренировка</title>
+  <style>
+    .study-container {
+      max-width: 600px;
+      margin: 4rem auto;
+      text-align: center;
+    }
+    .word-display {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 2rem 0;
+      color: var(--color-text);
+    }
+    .answer-block {
+      display: none; /* Скрыто по умолчанию */
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--color-border);
+    }
+    .translation {
+      font-size: 2rem;
+      color: var(--color-primary-hover);
+      margin-bottom: 1rem;
+    }
+    .example {
+      font-size: 1.2rem;
+      color: var(--color-text-muted);
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .progress-text {
+      color: var(--color-text-muted);
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container study-container">
+  <div class="progress-text">
+    Карточка <span th:text="${currentIndex}">1</span> из <span th:text="${totalCards}">10</span>
+  </div>
+
+  <div class="card">
+    <!-- Лицевая сторона -->
+    <div class="word-display" th:text="${card.frontText}">Слово</div>
+
+    <button id="showAnswerBtn" class="btn btn-primary" onclick="toggleAnswer()">Показать перевод</button>
+
+    <div id="answerBlock" class="answer-block">
+      <div class="translation" th:text="${card.backText}">Перевод</div>
+
+      <div th:if="${card.exampleSentence != null and !card.exampleSentence.isEmpty()}"
+           class="example" th:text="${card.exampleSentence}">Пример</div>
+
+      <form th:action="@{/decks/{deckId}/study/answer(deckId=${deckId})}" method="post" class="action-buttons">
+        <input type="hidden" name="cardId" th:value="${card.id}" />
+
+        <button type="submit" name="isCorrect" value="false" class="btn btn-delete">Не знал</button>
+        <button type="submit" name="isCorrect" value="true" class="btn btn-primary">Знал</button>
+      </form>
+    </div>
+  </div>
+
+  <a th:href="@{/decks/{deckId}(deckId=${deckId})}" class="btn btn-outline" style="margin-top: 2rem;">Прервать тренировку</a>
+</div>
+
+<script>
+  function toggleAnswer() {
+    document.getElementById('answerBlock').style.display = 'block';
+    document.getElementById('showAnswerBtn').style.display = 'none';
+  }
+</script>
+</body>
+</html>

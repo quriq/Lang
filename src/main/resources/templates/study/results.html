@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <title>Результаты тренировки</title>
+    <style>
+        .results-container { max-width: 500px; margin: 4rem auto; text-align: center; }
+        .stat-box { display: flex; justify-content: space-around; margin: 2rem 0; }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-value { font-size: 2.5rem; font-weight: bold; }
+        .stat-label { color: var(--color-text-muted); font-size: 0.9rem; text-transform: uppercase; }
+        .accuracy { font-size: 4rem; font-weight: bold; color: var(--color-primary-hover); margin: 1rem 0; }
+    </style>
+</head>
+<body>
+<div class="container results-container">
+    <h1>Тренировка завершена! 🎉</h1>
+
+    <div class="card">
+        <div class="accuracy">
+            <span th:text="${accuracy}">85.0</span>%
+        </div>
+        <p class="text-muted">Точность ответов</p>
+
+        <div class="stat-box">
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-success);" th:text="${correct}">0</span>
+                <span class="stat-label">Знал</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" style="color: var(--color-danger);" th:text="${wrong}">0</span>
+                <span class="stat-label">Не знал</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" th:text="${total}">0</span>
+                <span class="stat-label">Всего</span>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+        <a th:href="@{/decks/{deckId}/study(deckId=${deckId})}" class="btn btn-primary">Учить снова</a>
+        <a th:href="@{/decks/{deckId}(deckId=${deckId})}" class="btn btn-outline">Вернуться к колоде</a>
+    </div>
+</div>
+</body>
+</html>

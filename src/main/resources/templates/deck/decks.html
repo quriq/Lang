@@ -18,16 +18,19 @@
             <p>No decks yet. Create your first deck!</p>
         </div>
 
+
         <div th:unless="${#lists.isEmpty(decks)}">
             <div th:each="deck : ${decks}" class="deck-card">
 
                 <h3 th:text="${deck.name}">Deck Name</h3>
                 <p><strong>Language:</strong> <span th:text="${deck.targetLanguage}">Language</span></p>
-
                 <span th:text="${#temporals.format(deck.createdAt, 'dd.MM.yyyy')}">Date</span>
                 <p><strong>Folder:</strong> <span th:if="${deck.folder != null}" th:text="${deck.folder.name}">Folder Name</span>
                     <span th:if="${deck.folder == null}"></span></p>
-                <a th:href="@{/decks/{id}/cards(id=${deck.id})}" class="btn btn-primary">Карточки</a>
+                <div style="display: flex; gap: var(--spacing-sm); align-items: center;">
+                    <a th:href="@{/decks/{deckId}/study(deckId=${deck.id})}" class="btn btn-primary">Учить</a>
+
+                    <a th:href="@{/decks/{id}/cards(id=${deck.id})}" class="btn btn-primary">Карточки</a>
                 <button class="btn btn-outline openEditDeckModalBtn"
                         th:data-deck-id="${deck.id}"
                         th:data-name="${deck.name}"

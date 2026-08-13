@@ -1,12 +1,13 @@
 package com.example.lang.repository;
 
 import com.example.lang.entity.Card;
-import com.example.lang.entity.Deck;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
@@ -15,4 +16,25 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     long countByDeckUserId(Long userId);
     long countByDeckUserIdAndStabilityGreaterThan(Long userId, double threshold);
     List<Card> findByDeckIdOrderByCreatedAtDesc(Long deckId);
+
+    @Query(value = "SELECT * FROM cards WHERE deck_id = :deckId " +
+            "ORDER BY " +
+            "CASE " +
+            "  WHEN times_wrong > 0 AND times_wrong > times_correct THEN 1 " +
+            "  WHEN times_correct = 0 AND times_wrong = 0 THEN 2 " +
+            "  WHEN last_reviewed IS NOT NULL AND last_reviewed < :oneDayAgo THEN 3 " +
+            "  ELSE 4 " +
+            "END, " +
+            "CASE " +
+            "  WHEN times_wrong > 0 AND times_wrong > times_correct THEN times_wrong END DESC, " +
+            "CASE " +
+            "  WHEN times_correct = 0 AND times_wrong = 0 THEN created_at END DESC, " +
+            "CASE " +
+            "  WHEN last_reviewed IS NOT NULL AND last_reviewed < :oneDayAgo THEN last_reviewed END ASC, " +
+            "times_correct ASC",
+            nativeQuery = true)
+    List<Card> findCardsForStudy(@Param("deckId") Long deckId,
+                                 @Param("oneDayAgo") LocalDateTime oneDayAgo);
+    LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
+
 }

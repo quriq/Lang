@@ -27,6 +27,14 @@ public class Card {
 
     @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
+    @Column(name = "times_correct", nullable = false, columnDefinition = "integer default 0")
+    private int timesCorrect = 0;
+
+    @Column(name = "times_wrong", nullable = false, columnDefinition = "integer default 0")
+    private int timesWrong = 0;
+
+    @Column(name = "last_reviewed")
+    private LocalDateTime lastReviewed;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deck_id", nullable = false)
     private Deck deck;
@@ -60,5 +68,13 @@ public class Card {
 
     public Deck getDeck() { return deck; }
     public void setDeck(Deck deck) { this.deck = deck; }
+    public int getTimesCorrect() { return timesCorrect; }
+    public void setTimesCorrect(int timesCorrect) { this.timesCorrect = timesCorrect; }
+
+    public int getTimesWrong() { return timesWrong; }
+    public void setTimesWrong(int timesWrong) { this.timesWrong = timesWrong; }
+
+    public LocalDateTime getLastReviewed() { return lastReviewed; }
+    public void setLastReviewed(LocalDateTime lastReviewed) { this.lastReviewed = lastReviewed; }
 
 }
