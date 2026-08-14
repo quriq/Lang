@@ -116,17 +116,9 @@ public class StudyController {
                 correctAnswer = card.getBackText();
             }
 
-            // ← ДОБАВЛЕНО: диагностика
-            System.out.println("=== TYPING MODE ===");
-            System.out.println("typedAnswer: [" + typedAnswer + "]");
-            System.out.println("correctAnswer: [" + correctAnswer + "]");
-            System.out.println("typedAnswer.trim(): [" + (typedAnswer != null ? typedAnswer.trim() : "null") + "]");
-            System.out.println("correctAnswer.trim(): [" + correctAnswer.trim() + "]");
-
             correct = typedAnswer != null &&
                     typedAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
-
-            System.out.println("correct: " + correct);
+            
         } else {
             correct = isCorrect != null && isCorrect;
         }
