@@ -40,8 +40,8 @@
     </div>
 
     <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
-        <a th:href="@{/decks/{deckId}/study(deckId=${deckId})}" class="btn btn-primary">Учить снова</a>
-        <a th:href="@{/decks/{deckId}(deckId=${deckId})}" class="btn btn-outline">Вернуться к колоде</a>
+        <a th:href="${isGlobal} ? @{/study/all(mode='classic')} : @{/decks/{deckId}/study(deckId=${deckId})}" class="btn btn-primary">Учить снова</a>
+        <a th:href="${isGlobal} ? @{/} : @{/decks/{deckId}(deckId=${deckId})}" class="btn btn-outline">Вернуться назад</a>
     </div>
 </div>
 </body>

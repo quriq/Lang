@@ -28,13 +28,32 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             "CASE " +
             "  WHEN times_wrong > 0 AND times_wrong > times_correct THEN times_wrong END DESC, " +
             "CASE " +
-            "  WHEN times_correct = 0 AND times_wrong = 0 THEN created_at END DESC, " +
+            "  WHEN times_correct = 0 AND times_wrong = 0 THEN created_at END ASC, " +
             "CASE " +
             "  WHEN last_reviewed IS NOT NULL AND last_reviewed < :oneDayAgo THEN last_reviewed END ASC, " +
             "times_correct ASC",
             nativeQuery = true)
     List<Card> findCardsForStudy(@Param("deckId") Long deckId,
                                  @Param("oneDayAgo") LocalDateTime oneDayAgo);
-    LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
 
-}
+    @Query(value = "SELECT c.* FROM cards c " +
+            "JOIN decks d ON c.deck_id = d.id " +
+            "WHERE d.user_id = :userId " +
+            "ORDER BY " +
+            "CASE " +
+            "  WHEN c.times_wrong > 0 AND c.times_wrong > c.times_correct THEN 1 " +
+            "  WHEN c.times_correct = 0 AND c.times_wrong = 0 THEN 2 " +
+            "  WHEN c.last_reviewed IS NOT NULL AND c.last_reviewed < :oneDayAgo THEN 3 " +
+            "  ELSE 4 " +
+            "END, " +
+            "CASE " +
+            "  WHEN c.times_wrong > 0 AND c.times_wrong > c.times_correct THEN c.times_wrong END DESC, " +
+            "CASE " +
+            "  WHEN c.times_correct = 0 AND c.times_wrong = 0 THEN c.created_at END ASC, " +
+            "CASE " +
+            "  WHEN c.last_reviewed IS NOT NULL AND c.last_reviewed < :oneDayAgo THEN c.last_reviewed END ASC, " +
+            "c.times_correct ASC",
+            nativeQuery = true)
+    List<Card> findAllCardsForStudy(@Param("userId") Long userId,
+                                    @Param("oneDayAgo") LocalDateTime oneDayAgo);
+    }

@@ -27,4 +27,8 @@ public class StudyService {
         card.setLastReviewed(LocalDateTime.now());
         cardRepository.save(card);
     }
+    public List<Card> getAllStudyCards(Long userId) {
+        LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
+        return cardRepository.findAllCardsForStudy(userId, oneDayAgo);
+    }
 }

@@ -25,7 +25,78 @@
     </div>
     <a th:href="@{/decks}" class="btn btn-primary"> Колоды </a>
     <a th:href="@{/folders}" class="btn btn-primary"> Папки </a>
+    <button class="btn btn-primary openGlobalStudyModalBtn"> Глобальное изучение </button>
 </div>
 
+<div id="globalStudyModeModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content card" style="max-width: 500px;">
+        <h2 style="text-align: center; margin-bottom: 24px; color: #ffd4d4;">Глобальная тренировка</h2>
+        <p style="text-align: center; color: #996666; margin-bottom: 24px; font-size: 14px;">Учите все карточки из всех колод</p>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Классический режим -->
+            <a id="globalModeClassicLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.boxShadow='0 0 20px rgba(255, 42, 42, 0.3)'" onmouseout="this.style.borderColor='#330000'; this.style.boxShadow='none'">
+                <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">📖 Классический</div>
+                <div style="font-size: 14px; color: #996666;">Слово → Перевод</div>
+            </a>
+
+            <!-- Обратный режим -->
+            <a id="globalModeReverseLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.boxShadow='0 0 20px rgba(255, 42, 42, 0.3)'" onmouseout="this.style.borderColor='#330000'; this.style.boxShadow='none'">
+                <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">🔄 Обратный</div>
+                <div style="font-size: 14px; color: #996666;">Перевод → Слово</div>
+            </a>
+
+            <!-- Набор текста -->
+            <a id="globalModeTypingLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.boxShadow='0 0 20px rgba(255, 42, 42, 0.3)'" onmouseout="this.style.borderColor='#330000'; this.style.boxShadow='none'">
+                <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">⌨️ Набор текста</div>
+                <div style="font-size: 14px; color: #996666;">Ввод ответа с клавиатуры</div>
+            </a>
+
+            <!-- Случайный порядок -->
+            <a id="globalModeRandomLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.boxShadow='0 0 20px rgba(255, 42, 42, 0.3)'" onmouseout="this.style.borderColor='#330000'; this.style.boxShadow='none'">
+                <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">🎲 Случайный порядок</div>
+                <div style="font-size: 14px; color: #996666;">Карточки в случайном порядке</div>
+            </a>
+        </div>
+
+        <div style="margin-top: 24px; text-align: center;">
+            <button type="button" class="btn btn-outline modal-close-btn" style="padding: 8px 24px; border: 1px solid #330000; border-radius: 8px; background-color: transparent; color: #996666; font-family: 'Inter', sans-serif; font-size: 16px; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.color='#ff2a2a'" onmouseout="this.style.borderColor='#330000'; this.style.color='#996666'">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const globalStudyModeModal = document.getElementById('globalStudyModeModal');
+        const openGlobalStudyBtn = document.querySelector('.openGlobalStudyModalBtn');
+        const closeGlobalStudyBtn = globalStudyModeModal.querySelector('.modal-close-btn');
+
+        const globalModeClassicLink = document.getElementById('globalModeClassicLink');
+        const globalModeReverseLink = document.getElementById('globalModeReverseLink');
+        const globalModeTypingLink = document.getElementById('globalModeTypingLink');
+        const globalModeRandomLink = document.getElementById('globalModeRandomLink');
+
+        openGlobalStudyBtn.addEventListener('click', function() {
+            globalModeClassicLink.href = `/study/all?mode=classic`;
+            globalModeReverseLink.href = `/study/all?mode=reverse`;
+            globalModeTypingLink.href = `/study/all?mode=typing`;
+            globalModeRandomLink.href = `/study/all?mode=random`;
+
+            globalStudyModeModal.style.display = 'flex';
+        });
+
+        const closeGlobalStudyModal = () => {
+            globalStudyModeModal.style.display = 'none';
+        };
+
+        closeGlobalStudyBtn.addEventListener('click', closeGlobalStudyModal);
+        globalStudyModeModal.addEventListener('click', (e) => {
+            if (e.target === globalStudyModeModal) closeGlobalStudyModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && globalStudyModeModal.style.display === 'flex') closeGlobalStudyModal();
+        });
+    });
+</script>
 </body>
 </html>

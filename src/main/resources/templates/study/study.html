@@ -39,7 +39,7 @@
              style="font-size: 18px; color: #996666; font-style: italic; margin-bottom: 32px; word-wrap: break-word;"
              th:text="${example}">Пример</div>
 
-        <form th:action="@{/decks/{deckId}/study/answer(deckId=${deckId})}" method="post" style="display: flex; justify-content: center; gap: 16px;">
+        <form th:action="${isGlobal} ? @{/study/all/answer} : @{/decks/{deckId}/study/answer(deckId=${deckId})}" method="post" style="display: flex; justify-content: center; gap: 16px;">
           <input type="hidden" name="cardId" th:value="${card.id}" />
 
           <button type="submit" name="isCorrect" value="false" style="padding: 8px 24px; border: 1px solid #ff2a2a; border-radius: 8px; background-color: transparent; color: #ff2a2a; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.backgroundColor='#ff2a2a'; this.style.color='#080000'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ff2a2a'">Не знал</button>
@@ -51,7 +51,7 @@
 
     <!-- ========== РЕЖИМ TYPING ========== -->
     <div th:if="${mode == 'typing'}">
-      <form th:action="@{/decks/{deckId}/study/answer(deckId=${deckId})}" method="post" id="typingForm">
+      <form th:action="${isGlobal} ? @{/study/all/answer} : @{/decks/{deckId}/study/answer(deckId=${deckId})}" method="post" id="typingForm">
         <input type="hidden" name="cardId" th:value="${card.id}" />
 
         <div style="margin-bottom: 16px;">
@@ -74,7 +74,7 @@
 
 <!-- Кнопка прервать тренировку -->
 <div style="position: fixed; bottom: 24px; left: 0; width: 100%; text-align: center;">
-  <a th:href="@{/decks/{deckId}(deckId=${deckId})}" style="color: #996666; text-decoration: none; font-size: 14px; transition: color 0.15s ease;" onmouseover="this.style.color='#ff2a2a'" onmouseout="this.style.color='#996666'">Прервать тренировку</a>
+  <a th:href="${isGlobal} ? @{/} : @{/decks/{deckId}(deckId=${deckId})}" style="color: #996666; text-decoration: none; font-size: 14px; transition: color 0.15s ease;" onmouseover="this.style.color='#ff2a2a'" onmouseout="this.style.color='#996666'">Прервать тренировку</a>
 </div>
 
 <script>
