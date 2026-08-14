@@ -28,8 +28,10 @@
                 <p><strong>Folder:</strong> <span th:if="${deck.folder != null}" th:text="${deck.folder.name}">Folder Name</span>
                     <span th:if="${deck.folder == null}"></span></p>
                 <div style="display: flex; gap: var(--spacing-sm); align-items: center;">
-                    <a th:href="@{/decks/{deckId}/study(deckId=${deck.id})}" class="btn btn-primary">Учить</a>
-
+                    <button class="btn btn-primary openStudyModeModalBtn"
+                            th:data-deck-id="${deck.id}">
+                        Учить
+                    </button>
                     <a th:href="@{/decks/{id}/cards(id=${deck.id})}" class="btn btn-primary">Карточки</a>
                 <button class="btn btn-outline openEditDeckModalBtn"
                         th:data-deck-id="${deck.id}"
@@ -117,6 +119,36 @@
             </form>
         </div>
     </div>
+
+        <div id="studyModeModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content card" style="max-width: 500px;">
+                <h2 style="text-align: center; margin-bottom: 24px; color: #ffd4d4;">Выберите режим тренировки</h2>
+
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <!-- Классический режим -->
+                    <a id="modeClassicLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.boxShadow='0 0 20px rgba(255, 42, 42, 0.3)'" onmouseout="this.style.borderColor='#330000'; this.style.boxShadow='none'">
+                        <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">📖 Классический</div>
+                        <div style="font-size: 14px; color: #996666;">Слово → Перевод</div>
+                    </a>
+
+                    <!-- Обратный режим -->
+                    <a id="modeReverseLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.boxShadow='0 0 20px rgba(255, 42, 42, 0.3)'" onmouseout="this.style.borderColor='#330000'; this.style.boxShadow='none'">
+                        <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">🔄 Обратный</div>
+                        <div style="font-size: 14px; color: #996666;">Перевод → Слово</div>
+                    </a>
+
+                    <!-- Набор текста -->
+                    <a id="modeTypingLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.boxShadow='0 0 20px rgba(255, 42, 42, 0.3)'" onmouseout="this.style.borderColor='#330000'; this.style.boxShadow='none'">
+                        <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">⌨️ Набор текста</div>
+                        <div style="font-size: 14px; color: #996666;">Ввод ответа с клавиатуры</div>
+                    </a>
+                </div>
+
+                <div style="margin-top: 24px; text-align: center;">
+                    <button type="button" class="btn btn-outline modal-close-btn" style="padding: 8px 24px; border: 1px solid #330000; border-radius: 8px; background-color: transparent; color: #996666; font-family: 'Inter', sans-serif; font-size: 16px; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.color='#ff2a2a'" onmouseout="this.style.borderColor='#330000'; this.style.color='#996666'">Отмена</button>
+                </div>
+            </div>
+        </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('createDeckModal');
@@ -171,6 +203,40 @@
             });
         });
 
+
+        const studyModeModal = document.getElementById('studyModeModal');
+        const openStudyModeBtns = document.querySelectorAll('.openStudyModeModalBtn');
+        const closeStudyModeBtn = studyModeModal.querySelector('.modal-close-btn');
+        const modeClassicLink = document.getElementById('modeClassicLink');
+        const modeReverseLink = document.getElementById('modeReverseLink');
+        const modeTypingLink = document.getElementById('modeTypingLink');
+
+        let currentDeckIdForStudy = null;
+
+        openStudyModeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentDeckIdForStudy = this.getAttribute('data-deck-id');
+
+                modeClassicLink.href = `/decks/${currentDeckIdForStudy}/study?mode=classic`;
+                modeReverseLink.href = `/decks/${currentDeckIdForStudy}/study?mode=reverse`;
+                modeTypingLink.href = `/decks/${currentDeckIdForStudy}/study?mode=typing`;
+
+                studyModeModal.style.display = 'flex';
+            });
+        });
+
+        const closeStudyModeModal = () => {
+            studyModeModal.style.display = 'none';
+            currentDeckIdForStudy = null;
+        };
+
+        closeStudyModeBtn.addEventListener('click', closeStudyModeModal);
+        studyModeModal.addEventListener('click', (e) => {
+            if (e.target === studyModeModal) closeStudyModeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && studyModeModal.style.display === 'flex') closeStudyModeModal();
+        });
     </script>
 </body>
 </html>

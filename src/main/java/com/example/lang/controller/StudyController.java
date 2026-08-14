@@ -46,7 +46,7 @@ public class StudyController {
     private static final String SESSION_WRONG = "studyWrong_";
 
     @GetMapping
-    public String startStudy(@PathVariable Long deckId, Model model, HttpSession session) {
+    public String startStudy(@PathVariable Long deckId, @RequestParam(defaultValue = "classic") String mode, Model model, HttpSession session) {
         User currentUser = getCurrentUser();
 
         Deck deck = deckRepository.findById(deckId)
@@ -72,6 +72,8 @@ public class StudyController {
         session.setAttribute(SESSION_INDEX + deckId, 0);
         session.setAttribute(SESSION_CORRECT + deckId, 0);
         session.setAttribute(SESSION_WRONG + deckId, 0);
+        session.setAttribute("studyWrongCards_" + deckId, new ArrayList<>());
+        session.setAttribute("studyMode_" + deckId, mode);
 
         return showCurrentCard(deckId, model, session);
     }
@@ -80,7 +82,8 @@ public class StudyController {
     public String processAnswer(
             @PathVariable Long deckId,
             @RequestParam Long cardId,
-            @RequestParam boolean isCorrect,
+            @RequestParam(required = false) Boolean isCorrect,
+            @RequestParam(required = false) String typedAnswer,
             Model model,
             HttpSession session) {
 
@@ -89,7 +92,9 @@ public class StudyController {
         @SuppressWarnings("unchecked")
         List<Long> queue = (List<Long>) session.getAttribute(SESSION_QUEUE + deckId);
 
+
         if (queue == null || !queue.contains(cardId)) {
+            System.out.println("ERROR: queue is null or doesn't contain cardId!");
             throw new RuntimeException("Недопустимая карточка");
         }
 
@@ -100,18 +105,53 @@ public class StudyController {
             throw new RuntimeException("Карточка не принадлежит этой колоде");
         }
 
-        studyService.processAnswer(card, isCorrect);
+        String mode = (String) session.getAttribute("studyMode_" + deckId);
+        boolean correct;
 
-        int correct = (int) session.getAttribute(SESSION_CORRECT + deckId);
-        int wrong = (int) session.getAttribute(SESSION_WRONG + deckId);
+        if ("typing".equals(mode)) {
+            String correctAnswer;
+            if ("reverse".equals(mode)) {
+                correctAnswer = card.getFrontText();
+            } else {
+                correctAnswer = card.getBackText();
+            }
 
-        if (isCorrect) {
-            session.setAttribute(SESSION_CORRECT + deckId, correct + 1);
+            // ← ДОБАВЛЕНО: диагностика
+            System.out.println("=== TYPING MODE ===");
+            System.out.println("typedAnswer: [" + typedAnswer + "]");
+            System.out.println("correctAnswer: [" + correctAnswer + "]");
+            System.out.println("typedAnswer.trim(): [" + (typedAnswer != null ? typedAnswer.trim() : "null") + "]");
+            System.out.println("correctAnswer.trim(): [" + correctAnswer.trim() + "]");
+
+            correct = typedAnswer != null &&
+                    typedAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
+
+            System.out.println("correct: " + correct);
         } else {
-            session.setAttribute(SESSION_WRONG + deckId, wrong + 1);
+            correct = isCorrect != null && isCorrect;
+        }
+
+        studyService.processAnswer(card, correct);
+
+        int correctCount = (int) session.getAttribute(SESSION_CORRECT + deckId);
+        int wrongCount = (int) session.getAttribute(SESSION_WRONG + deckId);
+
+        if (correct) {
+            session.setAttribute(SESSION_CORRECT + deckId, correctCount + 1);
+        } else {
+            session.setAttribute(SESSION_WRONG + deckId, wrongCount + 1);
+
+            @SuppressWarnings("unchecked")
+            List<Long> wrongCards = (List<Long>) session.getAttribute("studyWrongCards_" + deckId);
+            if (wrongCards == null) {
+                wrongCards = new ArrayList<>();
+            }
+            wrongCards.add(cardId);
+            session.setAttribute("studyWrongCards_" + deckId, wrongCards);
         }
 
         int currentIndex = (int) session.getAttribute(SESSION_INDEX + deckId);
+
         session.setAttribute(SESSION_INDEX + deckId, currentIndex + 1);
 
         if (currentIndex + 1 >= queue.size()) {
@@ -129,33 +169,71 @@ public class StudyController {
 
         double accuracy = total > 0 ? (double) correct / total * 100 : 0;
 
+        @SuppressWarnings("unchecked")
+        List<Long> wrongCardIds = (List<Long>) session.getAttribute("studyWrongCards_" + deckId);
+        List<Card> wrongCards = new ArrayList<>();
+
+        if (wrongCardIds != null && !wrongCardIds.isEmpty()) {
+            for (Long cardId : wrongCardIds) {
+                cardRepository.findById(cardId).ifPresent(wrongCards::add);
+            }
+        }
+
         model.addAttribute("correct", correct);
         model.addAttribute("wrong", wrong);
         model.addAttribute("total", total);
         model.addAttribute("accuracy", String.format("%.1f", accuracy));
         model.addAttribute("deckId", deckId);
+        model.addAttribute("wrongCards", wrongCards);
 
         session.removeAttribute(SESSION_QUEUE + deckId);
         session.removeAttribute(SESSION_INDEX + deckId);
         session.removeAttribute(SESSION_CORRECT + deckId);
         session.removeAttribute(SESSION_WRONG + deckId);
+        session.removeAttribute("studyWrongCards_" + deckId);
+        session.removeAttribute("studyMode_" + deckId);
 
         return "study/results";
     }
 
     private String showCurrentCard(Long deckId, Model model, HttpSession session) {
+
         @SuppressWarnings("unchecked")
         List<Long> queue = (List<Long>) session.getAttribute(SESSION_QUEUE + deckId);
         int currentIndex = (int) session.getAttribute(SESSION_INDEX + deckId);
 
+        if (currentIndex >= queue.size()) {
+            System.out.println("ERROR: currentIndex >= queue.size()!");
+            return "redirect:/decks/" + deckId + "/study/results";
+        }
+
         Long cardId = queue.get(currentIndex);
+
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new IllegalArgumentException("Карточка не найдена"));
+
+        String mode = (String) session.getAttribute("studyMode_" + deckId);
+        if (mode == null) mode = "classic";
+
+        String question;
+        String answer;
+
+        if ("reverse".equals(mode)) {
+            question = card.getBackText();
+            answer = card.getFrontText();
+        } else {
+            question = card.getFrontText();
+            answer = card.getBackText();
+        }
 
         model.addAttribute("card", card);
         model.addAttribute("deckId", deckId);
         model.addAttribute("currentIndex", currentIndex + 1);
         model.addAttribute("totalCards", queue.size());
+        model.addAttribute("mode", mode);
+        model.addAttribute("question", question);
+        model.addAttribute("answer", answer);
+        model.addAttribute("example", card.getExampleSentence());
 
         return "study/study";
     }
