@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -66,6 +67,9 @@ public class StudyController {
         List<Long> cardIds = new ArrayList<>();
         for (Card card : cards) {
             cardIds.add(card.getId());
+        }
+        if ("random".equals(mode)) {
+            Collections.shuffle(cardIds);
         }
 
         session.setAttribute(SESSION_QUEUE + deckId, cardIds);
@@ -118,7 +122,7 @@ public class StudyController {
 
             correct = typedAnswer != null &&
                     typedAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
-            
+
         } else {
             correct = isCorrect != null && isCorrect;
         }
