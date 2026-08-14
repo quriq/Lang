@@ -89,6 +89,86 @@ body {
     transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: var(--spacing-md);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Группы полей формы */
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: bold;
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+}
+
+/* Поля ввода (input, textarea, select) */
+.form-control {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    font-family: var(--font-family);
+    font-size: var(--font-size-md);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: var(--color-text-muted);
+}
+
+.form-control:focus {
+    border-color: var(--color-primary-hover);
+    box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Уведомления (Alerts) */
+.alert {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    border-left: 4px solid;
+    font-size: var(--font-size-sm);
+}
+
+.alert-error {
+    background-color: rgba(255, 42, 42, 0.1);
+    border-color: var(--color-danger);
+    color: var(--color-btn-danger);
+}
+
+.alert-success {
+    background-color: rgba(0, 204, 102, 0.1);
+    border-color: var(--color-success);
+    color: var(--color-success);
+}
+
+/* Ссылки в формах */
+a.text-primary:hover {
+    text-decoration: underline;
+}
+
 /* Кнопки */
 .btn {
     padding: var(--spacing-sm) var(--spacing-md);
