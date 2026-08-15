@@ -43,39 +43,47 @@
              style="font-size: 18px; color: #996666; font-style: italic; margin-bottom: 32px; word-wrap: break-word;"
              th:text="${example}">Пример</div>
 
-        <!-- ========== ФОРМА ДЛЯ РЕЖИМА FSRS (spaced) - 4 кнопки ========== -->
+        <!-- ========== ФОРМА ДЛЯ РЕЖИМА FSRS (spaced) - 4 кнопки с интервалами ========== -->
         <form th:if="${mode == 'spaced'}"
               th:action="${isGlobal} ? @{/study/all/answer} : @{/decks/{deckId}/study/answer(deckId=${deckId})}"
               method="post"
               style="display: flex; justify-content: center; gap: 12px;">
           <input type="hidden" name="cardId" th:value="${card.id}" />
 
+          <!-- AGAIN -->
           <button type="submit" name="fsrsRating" value="1"
-                  style="flex: 1; padding: 12px; border: 1px solid #ff2a2a; border-radius: 8px; background-color: transparent; color: #ff2a2a; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.15s ease;"
+                  style="flex: 1; padding: 12px 8px; border: 1px solid #ff2a2a; border-radius: 8px; background-color: transparent; color: #ff2a2a; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.15s ease;"
                   onmouseover="this.style.backgroundColor='#ff2a2a'; this.style.color='#080000'"
                   onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ff2a2a'">
-            Again
+            <div style="font-size: 14px; font-weight: bold;">Again</div>
+            <div style="font-size: 11px; margin-top: 4px; opacity: 0.8;" th:text="${fsrsAgainLabel}">10m</div>
           </button>
 
+          <!-- HARD -->
           <button type="submit" name="fsrsRating" value="2"
-                  style="flex: 1; padding: 12px; border: 1px solid #ffaa00; border-radius: 8px; background-color: transparent; color: #ffaa00; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.15s ease;"
+                  style="flex: 1; padding: 12px 8px; border: 1px solid #ffaa00; border-radius: 8px; background-color: transparent; color: #ffaa00; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.15s ease;"
                   onmouseover="this.style.backgroundColor='#ffaa00'; this.style.color='#080000'"
                   onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ffaa00'">
-            Hard
+            <div style="font-size: 14px; font-weight: bold;">Hard</div>
+            <div style="font-size: 11px; margin-top: 4px; opacity: 0.8;" th:text="${fsrsHardLabel}">1d</div>
           </button>
 
+          <!-- GOOD -->
           <button type="submit" name="fsrsRating" value="3"
-                  style="flex: 1; padding: 12px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: background-color 0.15s ease;"
+                  style="flex: 1; padding: 12px 8px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-family: 'Inter', sans-serif; cursor: pointer; transition: background-color 0.15s ease;"
                   onmouseover="this.style.backgroundColor='#ff2a2a'"
                   onmouseout="this.style.backgroundColor='#6f0000'">
-            Good
+            <div style="font-size: 14px; font-weight: bold;">Good</div>
+            <div style="font-size: 11px; margin-top: 4px; opacity: 0.8;" th:text="${fsrsGoodLabel}">5d</div>
           </button>
 
+          <!-- EASY -->
           <button type="submit" name="fsrsRating" value="4"
-                  style="flex: 1; padding: 12px; border: 1px solid #00cc66; border-radius: 8px; background-color: transparent; color: #00cc66; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.15s ease;"
+                  style="flex: 1; padding: 12px 8px; border: 1px solid #00cc66; border-radius: 8px; background-color: transparent; color: #00cc66; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.15s ease;"
                   onmouseover="this.style.backgroundColor='#00cc66'; this.style.color='#080000'"
                   onmouseout="this.style.backgroundColor='transparent'; this.style.color='#00cc66'">
-            Easy
+            <div style="font-size: 14px; font-weight: bold;">Easy</div>
+            <div style="font-size: 11px; margin-top: 4px; opacity: 0.8;" th:text="${fsrsEasyLabel}">12d</div>
           </button>
         </form>
 

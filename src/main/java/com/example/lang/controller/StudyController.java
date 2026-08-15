@@ -6,6 +6,7 @@ import com.example.lang.entity.User;
 import com.example.lang.repository.CardRepository;
 import com.example.lang.repository.DeckRepository;
 import com.example.lang.repository.UserRepository;
+import com.example.lang.service.FsrsService;
 import com.example.lang.service.StudyService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.time.Duration;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +39,8 @@ public class StudyController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FsrsService fsrsService;
 
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -258,8 +264,34 @@ public class StudyController {
         model.addAttribute("answer", answer);
         model.addAttribute("example", card.getExampleSentence());
 
+        if ("spaced".equals(mode)) {
+            LocalDateTime now = LocalDateTime.now();
+            int elapsedDays = card.getFsrsLastReview() != null
+                    ? (int) Duration.between(card.getFsrsLastReview(), now).toDays()
+                    : 0;
+
+            model.addAttribute("fsrsAgainLabel", "10m");
+
+            FsrsService.FsrsResult hardResult = fsrsService.processAnswer(
+                    card.getFsrsDifficulty(), card.getFsrsStability(), elapsedDays, 2);
+            FsrsService.FsrsResult goodResult = fsrsService.processAnswer(
+                    card.getFsrsDifficulty(), card.getFsrsStability(), elapsedDays, 3);
+            FsrsService.FsrsResult easyResult = fsrsService.processAnswer(
+                    card.getFsrsDifficulty(), card.getFsrsStability(), elapsedDays, 4);
+
+            model.addAttribute("fsrsHardLabel", formatInterval(hardResult.interval()));
+            model.addAttribute("fsrsGoodLabel", formatInterval(goodResult.interval()));
+            model.addAttribute("fsrsEasyLabel", formatInterval(easyResult.interval()));
+        }
+
         return "study/study";
     }
-
+    private String formatInterval(int days) {
+        if (days <= 0) return "10m";
+        if (days == 1) return "1d";
+        if (days < 30) return days + "d";
+        if (days < 365) return (days / 30) + "mo";
+        return (days / 365) + "y";
+    }
 
 }
