@@ -148,6 +148,11 @@
                         <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">🎲 Случайный порядок</div>
                         <div style="font-size: 14px; color: #996666;">Карточки в случайном порядке (слово → перевод)</div>
                     </a>
+                    <!-- Интервальное повторение -->
+                    <a id="modeSpacedLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.borderColor='#ff2a2a'; this.style.boxShadow='0 0 20px rgba(255, 42, 42, 0.3)'" onmouseout="this.style.borderColor='#330000'; this.style.boxShadow='none'">
+                        <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">⏰ Интервальное повторение</div>
+                        <div style="font-size: 14px; color: #996666;">Только карточки, готовые к повторению</div>
+                    </a>
                 </div>
 
                 <div style="margin-top: 24px; text-align: center;">
@@ -217,6 +222,7 @@
         const modeReverseLink = document.getElementById('modeReverseLink');
         const modeTypingLink = document.getElementById('modeTypingLink');
         const modeRandomLink = document.getElementById('modeRandomLink');
+        const modeSpacedLink = document.getElementById('modeSpacedLink');
 
         let currentDeckIdForStudy = null;
 
@@ -228,6 +234,7 @@
                 modeReverseLink.href = `/decks/${currentDeckIdForStudy}/study?mode=reverse`;
                 modeTypingLink.href = `/decks/${currentDeckIdForStudy}/study?mode=typing`;
                 modeRandomLink.href = `/decks/${currentDeckIdForStudy}/study?mode=random`;
+                modeSpacedLink.href = `/decks/${currentDeckIdForStudy}/study?mode=spaced`;
 
                 studyModeModal.style.display = 'flex';
             });

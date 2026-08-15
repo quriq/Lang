@@ -14,7 +14,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findByDeckId(Long deckId);
     List<Card> findByDeckIdAndDueDateBefore(Long deckId, LocalDateTime date);
     long countByDeckUserId(Long userId);
-    long countByDeckUserIdAndStabilityGreaterThan(Long userId, double threshold);
+    long countByDeckUserIdAndFsrsStabilityGreaterThan(Long userId, double threshold);
     List<Card> findByDeckIdOrderByCreatedAtDesc(Long deckId);
 
     @Query(value = "SELECT * FROM cards WHERE deck_id = :deckId " +
@@ -56,4 +56,19 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             nativeQuery = true)
     List<Card> findAllCardsForStudy(@Param("userId") Long userId,
                                     @Param("oneDayAgo") LocalDateTime oneDayAgo);
+
+    @Query(value = "SELECT c.* FROM cards c " +
+            "WHERE c.deck_id = :deckId AND c.due_date <= :now " +
+            "ORDER BY c.due_date ASC, c.times_wrong DESC",
+            nativeQuery = true)
+    List<Card> findCardsForSpacedRepetition(@Param("deckId") Long deckId,
+                                            @Param("now") LocalDateTime now);
+
+    @Query(value = "SELECT c.* FROM cards c " +
+            "JOIN decks d ON c.deck_id = d.id " +
+            "WHERE d.user_id = :userId AND c.due_date <= :now " +
+            "ORDER BY c.due_date ASC, c.times_wrong DESC",
+            nativeQuery = true)
+    List<Card> findAllCardsForSpacedRepetition(@Param("userId") Long userId,
+                                               @Param("now") LocalDateTime now);
     }

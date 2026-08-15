@@ -18,15 +18,18 @@ public class Card {
     private String exampleSentence;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-    @Column(nullable = false)
-    private double stability = 0.1;
-    @Column(nullable = false)
-    private double difficulty = 5.0;
-    @Column(name = "last_review_date")
-    private LocalDateTime lastReviewDate;
+    @Column(name = "fsrs_difficulty", nullable = false, columnDefinition = "double precision default 5.0")
+    private double fsrsDifficulty = 5.0;
 
+    @Column(name = "fsrs_stability", nullable = false, columnDefinition = "double precision default 0.1")
+    private double fsrsStability = 0.1;
+
+    @Column(name = "fsrs_last_review")
+    private LocalDateTime fsrsLastReview;
     @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
+    @Column(name = "interval_days", nullable = false, columnDefinition = "integer default 0")
+    private int intervalDays = 0;
     @Column(name = "times_correct", nullable = false, columnDefinition = "integer default 0")
     private int timesCorrect = 0;
 
@@ -54,14 +57,14 @@ public class Card {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public double getStability() { return stability; }
-    public void setStability(double stability) { this.stability = stability; }
+    public double getFsrsDifficulty() { return fsrsDifficulty; }
+    public void setFsrsDifficulty(double fsrsDifficulty) { this.fsrsDifficulty = fsrsDifficulty; }
 
-    public double getDifficulty() { return difficulty; }
-    public void setDifficulty(double difficulty) { this.difficulty = difficulty; }
+    public double getFsrsStability() { return fsrsStability; }
+    public void setFsrsStability(double fsrsStability) { this.fsrsStability = fsrsStability; }
 
-    public LocalDateTime getLastReviewDate() { return lastReviewDate; }
-    public void setLastReviewDate(LocalDateTime lastReviewDate) { this.lastReviewDate = lastReviewDate; }
+    public LocalDateTime getFsrsLastReview() { return fsrsLastReview; }
+    public void setFsrsLastReview(LocalDateTime fsrsLastReview) { this.fsrsLastReview = fsrsLastReview; }
 
     public LocalDateTime getDueDate() { return dueDate; }
     public void setDueDate(LocalDateTime dueDate) { this.dueDate = dueDate; }
@@ -77,4 +80,6 @@ public class Card {
     public LocalDateTime getLastReviewed() { return lastReviewed; }
     public void setLastReviewed(LocalDateTime lastReviewed) { this.lastReviewed = lastReviewed; }
 
+    public int getIntervalDays() { return intervalDays; }
+    public void setIntervalDays(int intervalDays) { this.intervalDays = intervalDays; }
 }

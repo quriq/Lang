@@ -7,6 +7,7 @@ import com.example.lang.repository.CardRepository;
 import com.example.lang.repository.DeckRepository;
 import com.example.lang.repository.UserRepository;
 import com.example.lang.service.StudyService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,12 @@ public class StudyController {
     private static final String SESSION_WRONG = "studyWrong_";
 
     @GetMapping
-    public String startStudy(@PathVariable Long deckId, @RequestParam(defaultValue = "classic") String mode, Model model, HttpSession session) {
+    public String startStudy(
+            @PathVariable Long deckId,
+            @RequestParam(defaultValue = "classic") String mode,
+            Model model,
+            HttpSession session) {
+
         User currentUser = getCurrentUser();
 
         Deck deck = deckRepository.findById(deckId)
@@ -57,10 +63,20 @@ public class StudyController {
             throw new RuntimeException("Нельзя учить чужую колоду");
         }
 
-        List<Card> cards = studyService.getStudyCards(deckId);
+        List<Card> cards;
+
+        if ("spaced".equals(mode)) {
+            cards = studyService.getSpacedRepetitionCards(deckId);
+        } else {
+            cards = studyService.getStudyCards(deckId);
+        }
 
         if (cards.isEmpty()) {
-            model.addAttribute("errorMessage", "В этой колоде нет карточек для изучения.");
+            if ("spaced".equals(mode)) {
+                model.addAttribute("errorMessage", "Нет карточек для повторения. Возвращайтесь позже!");
+            } else {
+                model.addAttribute("errorMessage", "В этой колоде нет карточек для изучения.");
+            }
             return "redirect:/decks/" + deckId;
         }
 
@@ -68,6 +84,7 @@ public class StudyController {
         for (Card card : cards) {
             cardIds.add(card.getId());
         }
+
         if ("random".equals(mode)) {
             Collections.shuffle(cardIds);
         }
@@ -88,6 +105,7 @@ public class StudyController {
             @RequestParam Long cardId,
             @RequestParam(required = false) Boolean isCorrect,
             @RequestParam(required = false) String typedAnswer,
+            HttpServletRequest request,
             Model model,
             HttpSession session) {
 
@@ -96,9 +114,7 @@ public class StudyController {
         @SuppressWarnings("unchecked")
         List<Long> queue = (List<Long>) session.getAttribute(SESSION_QUEUE + deckId);
 
-
         if (queue == null || !queue.contains(cardId)) {
-            System.out.println("ERROR: queue is null or doesn't contain cardId!");
             throw new RuntimeException("Недопустимая карточка");
         }
 
@@ -110,24 +126,36 @@ public class StudyController {
         }
 
         String mode = (String) session.getAttribute("studyMode_" + deckId);
-        boolean correct;
+        boolean correct = false;
 
-        if ("typing".equals(mode)) {
-            String correctAnswer;
-            if ("reverse".equals(mode)) {
-                correctAnswer = card.getFrontText();
-            } else {
-                correctAnswer = card.getBackText();
+        if ("spaced".equals(mode)) {
+            int rating = 3;
+            String fsrsRatingStr = request.getParameter("fsrsRating");
+
+            if (fsrsRatingStr != null) {
+                try {
+                    rating = Integer.parseInt(fsrsRatingStr);
+                    rating = Math.max(1, Math.min(4, rating));
+                } catch (NumberFormatException e) {
+                    rating = 3;
+                }
             }
 
-            correct = typedAnswer != null &&
-                    typedAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
+            correct = (rating > 1);
 
-        } else {
-            correct = isCorrect != null && isCorrect;
+            studyService.processSpacedRepetitionAnswer(card, rating);
         }
 
-        studyService.processAnswer(card, correct);
+        else if ("typing".equals(mode)) {
+            String correctAnswer = "reverse".equals(mode) ? card.getFrontText() : card.getBackText();
+            correct = typedAnswer != null && typedAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
+            studyService.processAnswer(card, correct);
+        }
+
+        else {
+            correct = Boolean.TRUE.equals(isCorrect);
+            studyService.processAnswer(card, correct);
+        }
 
         int correctCount = (int) session.getAttribute(SESSION_CORRECT + deckId);
         int wrongCount = (int) session.getAttribute(SESSION_WRONG + deckId);
@@ -147,7 +175,6 @@ public class StudyController {
         }
 
         int currentIndex = (int) session.getAttribute(SESSION_INDEX + deckId);
-
         session.setAttribute(SESSION_INDEX + deckId, currentIndex + 1);
 
         if (currentIndex + 1 >= queue.size()) {
@@ -233,4 +260,6 @@ public class StudyController {
 
         return "study/study";
     }
+
+
 }

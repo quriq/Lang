@@ -5,6 +5,7 @@ import com.example.lang.entity.User;
 import com.example.lang.repository.CardRepository;
 import com.example.lang.repository.UserRepository;
 import com.example.lang.service.StudyService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,6 @@ public class GlobalStudyController {
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     }
 
-    // Ключи сессии для глобальной тренировки (отличаются от обычных)
     private static final String SESSION_QUEUE = "globalStudyQueue";
     private static final String SESSION_INDEX = "globalStudyIndex";
     private static final String SESSION_CORRECT = "globalStudyCorrect";
@@ -50,10 +50,19 @@ public class GlobalStudyController {
             HttpSession session) {
 
         User currentUser = getCurrentUser();
-        List<Card> cards = studyService.getAllStudyCards(currentUser.getId());
+        List<Card> cards;
+        if ("spaced".equals(mode)) {
+            cards = studyService.getAllSpacedRepetitionCards(currentUser.getId());
+        } else {
+            cards = studyService.getAllStudyCards(currentUser.getId());
+        }
 
         if (cards.isEmpty()) {
-            model.addAttribute("errorMessage", "У вас нет карточек для изучения.");
+            if ("spaced".equals(mode)) {
+                model.addAttribute("errorMessage", "Нет карточек для повторения. Возвращайтесь позже!");
+            } else {
+                model.addAttribute("errorMessage", "У вас нет карточек для изучения.");
+            }
             return "redirect:/";
         }
 
@@ -62,7 +71,6 @@ public class GlobalStudyController {
             cardIds.add(card.getId());
         }
 
-        // Перемешиваем для режима random
         if ("random".equals(mode)) {
             Collections.shuffle(cardIds);
         }
@@ -82,6 +90,7 @@ public class GlobalStudyController {
             @RequestParam Long cardId,
             @RequestParam(required = false) String isCorrect,
             @RequestParam(required = false) String typedAnswer,
+            HttpServletRequest request,  // ← ИСПРАВЛЕНО: был DataFlavor
             Model model,
             HttpSession session) {
 
@@ -96,20 +105,39 @@ public class GlobalStudyController {
                 .orElseThrow(() -> new IllegalArgumentException("Карточка не найдена"));
 
         String mode = (String) session.getAttribute(SESSION_MODE);
-        boolean correct;
+        boolean correct = false;  // ← ИСПРАВЛЕНО: убрана двойная точка с запятой
 
-        if ("typing".equals(mode)) {
+        if ("spaced".equals(mode)) {
+            int rating = 3;
+            String fsrsRatingStr = request.getParameter("fsrsRating");
+
+            if (fsrsRatingStr != null) {
+                try {
+                    rating = Integer.parseInt(fsrsRatingStr);
+                    rating = Math.max(1, Math.min(4, rating));
+                } catch (NumberFormatException e) {
+                    rating = 3;
+                }
+            }
+
+            correct = (rating > 1);
+            studyService.processSpacedRepetitionAnswer(card, rating);
+        }
+
+        else if ("typing".equals(mode)) {
             String correctAnswer = card.getBackText();
             if ("reverse".equals(mode)) {
                 correctAnswer = card.getFrontText();
             }
             correct = typedAnswer != null &&
                     typedAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
-        } else {
-            correct = "true".equals(isCorrect);
+            studyService.processAnswer(card, correct);
         }
 
-        studyService.processAnswer(card, correct);
+        else {
+            correct = "true".equals(isCorrect);
+            studyService.processAnswer(card, correct);
+        }
 
         int correctCount = (int) session.getAttribute(SESSION_CORRECT);
         int wrongCount = (int) session.getAttribute(SESSION_WRONG);
@@ -163,9 +191,8 @@ public class GlobalStudyController {
         model.addAttribute("total", total);
         model.addAttribute("accuracy", String.format("%.1f", accuracy));
         model.addAttribute("wrongCards", wrongCards);
-        model.addAttribute("isGlobal", true);  // Флаг для шаблона
+        model.addAttribute("isGlobal", true);
 
-        // Очищаем сессию
         session.removeAttribute(SESSION_QUEUE);
         session.removeAttribute(SESSION_INDEX);
         session.removeAttribute(SESSION_CORRECT);
@@ -206,7 +233,7 @@ public class GlobalStudyController {
         model.addAttribute("question", question);
         model.addAttribute("answer", answer);
         model.addAttribute("example", card.getExampleSentence());
-        model.addAttribute("isGlobal", true);  // Флаг для шаблона
+        model.addAttribute("isGlobal", true);
 
         return "study/study";
     }

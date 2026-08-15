@@ -57,6 +57,11 @@
                 <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">🎲 Случайный порядок</div>
                 <div style="font-size: 14px; color: #996666;">Карточки в случайном порядке</div>
             </a>
+            <!-- 5. Интервальное повторение (FSRS) -->
+            <a id="globalModeSpacedLink" href="#" style="display: block; padding: 20px; border: 1px solid #330000; border-radius: 12px; background-color: #1a0000; text-decoration: none;" onmouseover="this.style.borderColor='#ff2a2a'" onmouseout="this.style.borderColor='#330000'">
+                <div style="font-size: 20px; font-weight: bold; color: #ffd4d4; margin-bottom: 8px;">⏰ Интервальное повторение</div>
+                <div style="font-size: 14px; color: #996666;">Только карточки, готовые к повторению</div>
+            </a>
         </div>
 
         <div style="margin-top: 24px; text-align: center;">
@@ -75,12 +80,14 @@
         const globalModeReverseLink = document.getElementById('globalModeReverseLink');
         const globalModeTypingLink = document.getElementById('globalModeTypingLink');
         const globalModeRandomLink = document.getElementById('globalModeRandomLink');
+        const globalModeSpacedLink = document.getElementById('globalModeSpacedLink');
 
         openGlobalStudyBtn.addEventListener('click', function() {
             globalModeClassicLink.href = `/study/all?mode=classic`;
             globalModeReverseLink.href = `/study/all?mode=reverse`;
             globalModeTypingLink.href = `/study/all?mode=typing`;
             globalModeRandomLink.href = `/study/all?mode=random`;
+            globalModeSpacedLink.href = `/study/all?mode=spaced`;
 
             globalStudyModeModal.style.display = 'flex';
         });

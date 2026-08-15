@@ -14,10 +14,11 @@
     <!-- Верхняя строка: режим + прогресс -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
       <div style="padding: 4px 12px; border: 1px solid #330000; border-radius: 16px; background-color: #080000; font-size: 12px; color: #996666; box-sizing: border-box;">
+        <span th:if="${mode == 'classic'}">📖 Классический</span>
         <span th:if="${mode == 'reverse'}">🔄 Обратный</span>
         <span th:if="${mode == 'typing'}">⌨️ Набор текста</span>
         <span th:if="${mode == 'random'}">🎲 Случайный порядок</span>
-        <span th:if="${mode == 'classic'}">📖 Классический</span>
+        <span th:if="${mode == 'spaced'}">⏰ Интервальное повторение</span>
       </div>
 
       <div style="color: #996666; font-size: 14px;">
@@ -28,23 +29,76 @@
     <!-- Вопрос -->
     <div style="font-size: 48px; font-weight: bold; margin: 32px 0; color: #ffd4d4; word-wrap: break-word;" th:text="${question}">Слово</div>
 
-    <!-- ========== РЕЖИМЫ CLASSIC / REVERSE ========== -->
+    <!-- ========== РЕЖИМЫ CLASSIC / REVERSE / RANDOM / SPACED ========== -->
     <div th:if="${mode != 'typing'}">
       <button id="showAnswerBtn" onclick="toggleAnswer()" style="padding: 8px 16px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.15s ease; box-sizing: border-box;" onmouseover="this.style.backgroundColor='#ff2a2a'" onmouseout="this.style.backgroundColor='#6f0000'">Показать ответ</button>
 
       <div id="answerBlock" style="display: none; margin-top: 32px; padding-top: 32px; border-top: 1px solid #330000;">
+
+        <!-- Перевод -->
         <div style="font-size: 32px; color: #ff2a2a; margin-bottom: 16px; word-wrap: break-word;" th:text="${answer}">Перевод</div>
 
+        <!-- Пример предложения -->
         <div th:if="${example != null and !example.isEmpty()}"
              style="font-size: 18px; color: #996666; font-style: italic; margin-bottom: 32px; word-wrap: break-word;"
              th:text="${example}">Пример</div>
 
-        <form th:action="${isGlobal} ? @{/study/all/answer} : @{/decks/{deckId}/study/answer(deckId=${deckId})}" method="post" style="display: flex; justify-content: center; gap: 16px;">
+        <!-- ========== ФОРМА ДЛЯ РЕЖИМА FSRS (spaced) - 4 кнопки ========== -->
+        <form th:if="${mode == 'spaced'}"
+              th:action="${isGlobal} ? @{/study/all/answer} : @{/decks/{deckId}/study/answer(deckId=${deckId})}"
+              method="post"
+              style="display: flex; justify-content: center; gap: 12px;">
           <input type="hidden" name="cardId" th:value="${card.id}" />
 
-          <button type="submit" name="isCorrect" value="false" style="padding: 8px 24px; border: 1px solid #ff2a2a; border-radius: 8px; background-color: transparent; color: #ff2a2a; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box;" onmouseover="this.style.backgroundColor='#ff2a2a'; this.style.color='#080000'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ff2a2a'">Не знал</button>
+          <button type="submit" name="fsrsRating" value="1"
+                  style="flex: 1; padding: 12px; border: 1px solid #ff2a2a; border-radius: 8px; background-color: transparent; color: #ff2a2a; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.15s ease;"
+                  onmouseover="this.style.backgroundColor='#ff2a2a'; this.style.color='#080000'"
+                  onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ff2a2a'">
+            Again
+          </button>
 
-          <button type="submit" name="isCorrect" value="true" style="padding: 8px 24px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.15s ease; box-sizing: border-box;" onmouseover="this.style.backgroundColor='#ff2a2a'" onmouseout="this.style.backgroundColor='#6f0000'">Знал</button>
+          <button type="submit" name="fsrsRating" value="2"
+                  style="flex: 1; padding: 12px; border: 1px solid #ffaa00; border-radius: 8px; background-color: transparent; color: #ffaa00; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.15s ease;"
+                  onmouseover="this.style.backgroundColor='#ffaa00'; this.style.color='#080000'"
+                  onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ffaa00'">
+            Hard
+          </button>
+
+          <button type="submit" name="fsrsRating" value="3"
+                  style="flex: 1; padding: 12px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: background-color 0.15s ease;"
+                  onmouseover="this.style.backgroundColor='#ff2a2a'"
+                  onmouseout="this.style.backgroundColor='#6f0000'">
+            Good
+          </button>
+
+          <button type="submit" name="fsrsRating" value="4"
+                  style="flex: 1; padding: 12px; border: 1px solid #00cc66; border-radius: 8px; background-color: transparent; color: #00cc66; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.15s ease;"
+                  onmouseover="this.style.backgroundColor='#00cc66'; this.style.color='#080000'"
+                  onmouseout="this.style.backgroundColor='transparent'; this.style.color='#00cc66'">
+            Easy
+          </button>
+        </form>
+
+        <!-- ========== ФОРМА ДЛЯ ОСТАЛЬНЫХ РЕЖИМОВ - 2 кнопки ========== -->
+        <form th:if="${mode != 'spaced'}"
+              th:action="${isGlobal} ? @{/study/all/answer} : @{/decks/{deckId}/study/answer(deckId=${deckId})}"
+              method="post"
+              style="display: flex; justify-content: center; gap: 16px;">
+          <input type="hidden" name="cardId" th:value="${card.id}" />
+
+          <button type="submit" name="isCorrect" value="false"
+                  style="padding: 8px 24px; border: 1px solid #ff2a2a; border-radius: 8px; background-color: transparent; color: #ff2a2a; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.15s ease; box-sizing: border-box;"
+                  onmouseover="this.style.backgroundColor='#ff2a2a'; this.style.color='#080000'"
+                  onmouseout="this.style.backgroundColor='transparent'; this.style.color='#ff2a2a'">
+            Не знал
+          </button>
+
+          <button type="submit" name="isCorrect" value="true"
+                  style="padding: 8px 24px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.15s ease; box-sizing: border-box;"
+                  onmouseover="this.style.backgroundColor='#ff2a2a'"
+                  onmouseout="this.style.backgroundColor='#6f0000'">
+            Знал
+          </button>
         </form>
       </div>
     </div>
