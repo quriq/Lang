@@ -24,7 +24,7 @@ public class DashboardService {
         Long userId = user.getId();
 
         long totalCards = cardRepository.countByDeckUserId(userId);
-        long learnedCards = cardRepository.countByDeckUserIdAndFsrsStabilityGreaterThan(userId, 1.0);
+        long learnedCards = cardRepository.countByDeckUserIdAndTimesCorrectGreaterThanEqual(userId, 3);
         int dayStreak = 7; // Заглушка
 
         return new DashboardStatsDto(totalCards, learnedCards, dayStreak, user.getLogin());

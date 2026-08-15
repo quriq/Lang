@@ -14,7 +14,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findByDeckId(Long deckId);
     List<Card> findByDeckIdAndDueDateBefore(Long deckId, LocalDateTime date);
     long countByDeckUserId(Long userId);
-    long countByDeckUserIdAndFsrsStabilityGreaterThan(Long userId, double threshold);
+    long countByDeckUserIdAndTimesCorrectGreaterThanEqual(Long userId, int threshold);
     List<Card> findByDeckIdOrderByCreatedAtDesc(Long deckId);
 
     @Query(value = "SELECT * FROM cards WHERE deck_id = :deckId " +
