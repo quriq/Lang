@@ -34,7 +34,7 @@ public class FsrsService {
 
     public int optimalInterval(double stability) {
         double interval = stability * Math.log(1.0 / REQUEST_RETENTION);
-        return (int) Math.round(interval);
+        return Math.max(1, (int) Math.round(interval));
     }
 
     public FsrsResult processAnswer(double currentDifficulty, double currentStability,

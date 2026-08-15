@@ -63,15 +63,21 @@ public class StudyService {
 
         card.setFsrsDifficulty(result.difficulty());
         card.setFsrsStability(result.stability());
-        card.setIntervalDays(result.interval());
-        card.setDueDate(now.plusDays(result.interval()));
-        card.setFsrsLastReview(now);
 
         if (rating == 1) {
+            // Again — повторяем через 10 минут (чтобы можно было повторить в той же сессии)
+            card.setIntervalDays(0);
+            card.setDueDate(now.plusMinutes(10));
             card.setTimesWrong(card.getTimesWrong() + 1);
         } else {
+            // Hard/Good/Easy — интервал в днях (минимум 1 день)
+            int intervalDays = Math.max(1, result.interval());
+            card.setIntervalDays(intervalDays);
+            card.setDueDate(now.plusDays(intervalDays));
             card.setTimesCorrect(card.getTimesCorrect() + 1);
         }
+
+        card.setFsrsLastReview(now);
         card.setLastReviewed(now);
 
         cardRepository.save(card);
