@@ -30,8 +30,8 @@
                     th:data-name="${folder.name}">Редактировать
             </button>
                 <span th:text="${#temporals.format(folder.createdAt, 'dd.MM.yyyy')}">Date</span>
-
-                <form th:href="@{/folders/{id}/edit(id=${folder.id})}" method="post">
+                
+                <form th:href="@{/folders/{id}/delete(id=${folder.id})}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <button type="submit" class="btn btn-primary" onclick="return confirm('Удалить папку и все её колоды?')">Удалить</button>
                 </form>
