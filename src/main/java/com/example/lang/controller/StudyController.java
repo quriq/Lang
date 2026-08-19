@@ -153,7 +153,7 @@ public class StudyController {
         }
 
         else if ("typing".equals(mode)) {
-            String correctAnswer = "reverse".equals(mode) ? card.getFrontText() : card.getBackText();
+            String correctAnswer = "reverse".equals(mode) ? card.getBackText() : card.getFrontText();
             correct = typedAnswer != null && typedAnswer.trim().equalsIgnoreCase(correctAnswer.trim());
             studyService.processAnswer(card, correct);
         }
