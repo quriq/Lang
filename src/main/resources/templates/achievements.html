@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <title>Достижения</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: var(--color-bg, #080000); color: var(--color-text, #ffd4d4); font-family: 'Inter', sans-serif;">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div style="max-width: 600px; margin: 100px auto; padding: 0 16px; text-align: center;">
+    <div style="font-size: 80px; margin-bottom: 24px;">🏆</div>
+    <h1 style="font-size: 32px; margin-bottom: 16px; color: #ffd4d4;">Достижения</h1>
+    <p style="font-size: 18px; color: #996666; margin-bottom: 32px;">Этот раздел находится в разработке. Скоро здесь появятся ваши достижения!</p>
+
+    <a th:href="@{/decks}" style="display: inline-block; padding: 12px 24px; border: 1px solid #330000; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; text-decoration: none; font-size: 16px; font-weight: bold;" onmouseover="this.style.backgroundColor='#ff2a2a'" onmouseout="this.style.backgroundColor='#6f0000'">Вернуться к колодам</a>
+</div>
+</body>
+</html>

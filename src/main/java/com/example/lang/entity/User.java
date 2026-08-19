@@ -19,6 +19,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)
     private Role role = Role.USER;
+    @Column(name = "theme", nullable = false, length = 10)
+    private String theme = "dark"; // По умолчанию темная тема
     public User() {}
 
     public Long getId() { return id; }
@@ -35,4 +37,6 @@ public class User {
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public String getTheme() { return theme; }
+    public void setTheme(String theme) { this.theme = theme; }
 }

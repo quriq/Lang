@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <title>Настройки</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: var(--color-bg, #080000); color: var(--color-text, #ffd4d4); font-family: 'Inter', sans-serif;">
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div style="max-width: 600px; margin: 100px auto; padding: 0 16px;">
+    <h1 style="font-size: 32px; margin-bottom: 32px; color: #ffd4d4;">⚙️ Настройки</h1>
+
+    <!-- Уведомления -->
+    <div th:if="${successMessage}" style="padding: 16px; margin-bottom: 24px; border-radius: 8px; background-color: rgba(0, 204, 102, 0.1); border-left: 4px solid #00cc66; color: #00cc66;" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" style="padding: 16px; margin-bottom: 24px; border-radius: 8px; background-color: rgba(255, 42, 42, 0.1); border-left: 4px solid #ff2a2a; color: #ff2a2a;" th:text="${errorMessage}"></div>
+
+    <!-- Смена имени -->
+    <div style="background-color: #1a0000; border: 1px solid #330000; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+        <h2 style="font-size: 20px; margin-bottom: 16px; color: #ffd4d4;">👤 Имя пользователя</h2>
+        <form th:action="@{/settings/username}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #996666; font-size: 14px;">Текущее имя</label>
+                <div style="padding: 12px 16px; background-color: #080000; border: 1px solid #330000; border-radius: 8px; color: #ffd4d4;" th:text="${user.login}">username</div>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #996666; font-size: 14px;">Новое имя</label>
+                <input type="text" name="newLogin" required style="width: 100%; padding: 12px 16px; border: 1px solid #330000; border-radius: 8px; background-color: #080000; color: #ffd4d4; font-size: 16px; box-sizing: border-box;" placeholder="Введите новое имя" />
+            </div>
+            <button type="submit" style="padding: 12px 24px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-size: 16px; font-weight: bold; cursor: pointer;" onmouseover="this.style.backgroundColor='#ff2a2a'" onmouseout="this.style.backgroundColor='#6f0000'">Сохранить</button>
+        </form>
+    </div>
+
+    <!-- Смена пароля -->
+    <div style="background-color: #1a0000; border: 1px solid #330000; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+        <h2 style="font-size: 20px; margin-bottom: 16px; color: #ffd4d4;">🔒 Смена пароля</h2>
+        <form th:action="@{/settings/password}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #996666; font-size: 14px;">Текущий пароль</label>
+                <input type="password" name="oldPassword" required style="width: 100%; padding: 12px 16px; border: 1px solid #330000; border-radius: 8px; background-color: #080000; color: #ffd4d4; font-size: 16px; box-sizing: border-box;" />
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #996666; font-size: 14px;">Новый пароль</label>
+                <input type="password" name="newPassword" required minlength="6" style="width: 100%; padding: 12px 16px; border: 1px solid #330000; border-radius: 8px; background-color: #080000; color: #ffd4d4; font-size: 16px; box-sizing: border-box;" />
+            </div>
+            <button type="submit" style="padding: 12px 24px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-size: 16px; font-weight: bold; cursor: pointer;" onmouseover="this.style.backgroundColor='#ff2a2a'" onmouseout="this.style.backgroundColor='#6f0000'">Сменить пароль</button>
+        </form>
+    </div>
+
+    <!-- Смена темы -->
+    <div style="background-color: #1a0000; border: 1px solid #330000; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+        <h2 style="font-size: 20px; margin-bottom: 16px; color: #ffd4d4;">🎨 Тема оформления</h2>
+        <form th:action="@{/settings/theme}" method="post" style="display: flex; gap: 16px;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <label style="flex: 1; padding: 16px; border: 2px solid #330000; border-radius: 8px; background-color: #080000; cursor: pointer; text-align: center; transition: all 0.15s ease;"
+                   onmouseover="this.style.borderColor='#ff2a2a'"
+                   onmouseout="this.style.borderColor='#330000'">
+                <input type="radio" name="theme" value="dark" th:checked="${user.theme == 'dark'}" style="margin-right: 8px;" />
+                🌙 Тёмная
+            </label>
+
+            <label style="flex: 1; padding: 16px; border: 2px solid #330000; border-radius: 8px; background-color: #ffffff; color: #1a0000; cursor: pointer; text-align: center; transition: all 0.15s ease;"
+                   onmouseover="this.style.borderColor='#ff2a2a'"
+                   onmouseout="this.style.borderColor='#330000'">
+                <input type="radio" name="theme" value="light" th:checked="${user.theme == 'light'}" style="margin-right: 8px;" />
+                ☀️ Светлая
+            </label>
+
+            <button type="submit" style="padding: 12px 24px; border: none; border-radius: 8px; background-color: #6f0000; color: #ffd4d4; font-size: 16px; font-weight: bold; cursor: pointer;" onmouseover="this.style.backgroundColor='#ff2a2a'" onmouseout="this.style.backgroundColor='#6f0000'">Применить</button>
+        </form>
+    </div>
+
+    <!-- Кнопка назад -->
+    <a th:href="@{/}" style="display: inline-block; padding: 12px 24px; border: 1px solid #330000; border-radius: 8px; background-color: transparent; color: #ffd4d4; text-decoration: none; font-size: 16px;" onmouseover="this.style.backgroundColor='#6f0000'" onmouseout="this.style.backgroundColor='transparent'">← Назад к колодам</a>
+</div>
+
+
+<script>
+    function toggleUserMenu() {
+        const menu = document.getElementById('userMenu');
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('userMenu');
+        const btn = document.getElementById('userMenuBtn');
+        if (menu && !menu.contains(e.target) && e.target !== btn) {
+            menu.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>

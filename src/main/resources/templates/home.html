@@ -6,6 +6,8 @@
     <title>Main</title>
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
+
 <div class="card">
     <h1>Welcome back, <span th:text="${stats.userName}">User</span></h1>
 
@@ -103,6 +105,20 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && globalStudyModeModal.style.display === 'flex') closeGlobalStudyModal();
         });
+    });
+
+
+    function toggleUserMenu() {
+        const menu = document.getElementById('userMenu');
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('userMenu');
+        const btn = document.getElementById('userMenuBtn');
+        if (menu && !menu.contains(e.target) && e.target !== btn) {
+            menu.style.display = 'none';
+        }
     });
 </script>
 </body>
