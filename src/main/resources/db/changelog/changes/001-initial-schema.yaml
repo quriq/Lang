@@ -1,0 +1,288 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: quriq
+      comment: Initial schema for Lang application
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: users
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: psw
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: theme
+                  type: VARCHAR(10)
+                  defaultValue: 'dark'
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2
+      author: quriq
+      comment: Create folders table
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: folders
+      changes:
+        - createTable:
+            tableName: folders
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_folders_user
+                    references: users(id)
+
+  - changeSet:
+      id: 3
+      author: quriq
+      comment: Create decks table
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: decks
+      changes:
+        - createTable:
+            tableName: decks
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: target_language
+                  type: VARCHAR(100)
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_decks_user
+                    references: users(id)
+              - column:
+                  name: folder_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_decks_folder
+                    references: folders(id)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 4
+      author: quriq
+      comment: Create cards table
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: cards
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: front_text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: back_text
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: example_sentence
+                  type: TEXT
+              - column:
+                  name: deck_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cards_deck
+                    references: decks(id)
+              - column:
+                  name: times_correct
+                  type: INTEGER
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: times_wrong
+                  type: INTEGER
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_reviewed
+                  type: TIMESTAMP
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 5
+      author: quriq
+      comment: Create card_stats table
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: card_stats
+      changes:
+        - createTable:
+            tableName: card_stats
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_card_stats_card
+                    references: cards(id)
+              - column:
+                  name: total_reviews
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: correct_count
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: last_review_date
+                  type: TIMESTAMP
+              - column:
+                  name: ease_factor
+                  type: DOUBLE PRECISION
+                  defaultValueNumeric: 2.5
+              - column:
+                  name: interval_days
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: repetition_count
+                  type: INTEGER
+                  defaultValueNumeric: 0
+
+  - changeSet:
+      id: 6
+      author: quriq
+      comment: Create review_history table
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: review_history
+      changes:
+        - createTable:
+            tableName: review_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_review_history_card
+                    references: cards(id)
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_review_history_user
+                    references: users(id)
+              - column:
+                  name: review_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: result
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: time_taken_ms
+                  type: BIGINT
